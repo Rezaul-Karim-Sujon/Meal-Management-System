@@ -4,14 +4,16 @@ using Meal_Management_Web_API.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Meal_Management_Web_API.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220209084314_MenuId column added in Menu Table")]
+    partial class MenuIdcolumnaddedinMenuTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -116,28 +118,11 @@ namespace Meal_Management_Web_API.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<DateTime>("CT")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int?>("CompanyInfoId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CompanyInfoId");
-
-                    b.ToTable("Menus");
-                });
-
-            modelBuilder.Entity("Meal_Management_Web_API.Models.Entities.MenuItem", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
                     b.Property<bool>("FixedItem")
                         .HasColumnType("bit");
+
+                    b.Property<int>("FoodItemId")
+                        .HasColumnType("int");
 
                     b.Property<int>("GroupId")
                         .HasColumnType("int");
@@ -150,31 +135,9 @@ namespace Meal_Management_Web_API.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("MenuId");
-
-                    b.ToTable("MenuItems");
-                });
-
-            modelBuilder.Entity("Meal_Management_Web_API.Models.Entities.MenuItemFoodItems", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("FoodItemId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("MenuItemId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
                     b.HasIndex("FoodItemId");
 
-                    b.HasIndex("MenuItemId");
-
-                    b.ToTable("MenuItemFoodItems");
+                    b.ToTable("Menus");
                 });
 
             modelBuilder.Entity("Meal_Management_Web_API.Models.Entities.PresentEmployee", b =>
@@ -284,7 +247,7 @@ namespace Meal_Management_Web_API.Migrations
             modelBuilder.Entity("Meal_Management_Web_API.Models.Entities.Meal", b =>
                 {
                     b.HasOne("Meal_Management_Web_API.Models.Entities.Menu", "Menu")
-                        .WithMany("Meals")
+                        .WithMany()
                         .HasForeignKey("MenuId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -292,31 +255,9 @@ namespace Meal_Management_Web_API.Migrations
 
             modelBuilder.Entity("Meal_Management_Web_API.Models.Entities.Menu", b =>
                 {
-                    b.HasOne("Meal_Management_Web_API.Models.Entities.CompanyInfo", "CompanyInfo")
-                        .WithMany("Menus")
-                        .HasForeignKey("CompanyInfoId");
-                });
-
-            modelBuilder.Entity("Meal_Management_Web_API.Models.Entities.MenuItem", b =>
-                {
-                    b.HasOne("Meal_Management_Web_API.Models.Entities.Menu", "Menu")
-                        .WithMany("MenuItems")
-                        .HasForeignKey("MenuId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Meal_Management_Web_API.Models.Entities.MenuItemFoodItems", b =>
-                {
-                    b.HasOne("Meal_Management_Web_API.Models.Entities.FoodItem", "FoodItem")
-                        .WithMany("MenuItemFoodItems")
+                    b.HasOne("Meal_Management_Web_API.Models.Entities.FoodItem", "FoodItems")
+                        .WithMany()
                         .HasForeignKey("FoodItemId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Meal_Management_Web_API.Models.Entities.MenuItem", "MenuItem")
-                        .WithMany("MenuItemFoodItems")
-                        .HasForeignKey("MenuItemId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

@@ -15,6 +15,8 @@ namespace Meal_Management_Web_API.Models.Entities
         public DbSet<FoodItem> FoodItems { get; set; }
         public DbSet<FoodCategory> FoodCategories { get; set; }
         public DbSet<PresentEmployee> PresentEmployees { get; set; }
+        public DbSet<MenuItem> MenuItems { get; set; }
+        public DbSet<MenuItemFoodItems> MenuItemFoodItems { get; set; }
         public DbSet<Menu> Menus { get; set; }
         public DbSet<Meal> Meals { get; set; }
         public DbSet<Response> Responses { get; set; }

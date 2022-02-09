@@ -22,6 +22,8 @@
     <Compile Remove="Migrations\20220202151421_Response Table Added.Designer.cs" />
     <Compile Remove="Migrations\20220208095812_Food Item Property change.cs" />
     <Compile Remove="Migrations\20220208095812_Food Item Property change.Designer.cs" />
+    <Compile Remove="Migrations\20220209110747_CompanyInfo Added in Menu.cs" />
+    <Compile Remove="Migrations\20220209110747_CompanyInfo Added in Menu.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>
