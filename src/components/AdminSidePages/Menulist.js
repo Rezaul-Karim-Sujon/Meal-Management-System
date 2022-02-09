@@ -1,0 +1,81 @@
+import { useEffect, useState } from "react";
+import axios from "axios";
+import {Link} from 'react-router-dom'
+import { useSelector, useDispatch } from 'react-redux';
+import {updateMenuListAction} from './../../redux/menu/menuListUpdateAction'
+
+export default function Menulist() {
+  const menuList = useSelector(state =>state.menuList.menuList)
+  const dispatch = useDispatch()
+
+  useEffect(() => {
+    axios
+      .post("http://localhost:12269/api/Users")
+      .then((res) => {
+        dispatch(updateMenuListAction(res));
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, [menuList]);
+  return (
+    <div className="menulist ">
+      <div className="itemHeaderDiv row">
+        <div className="itemAddBtnDiv ">
+          <Link to="/createMenu"><button
+            className="btn btn-primary"
+          >
+            Create Menu
+          </button></Link>
+        </div>
+
+        <div className="searchDiv">
+          <input
+            type="text"
+            placeholder="Search Items"
+            className="form-control"
+          />
+        </div>
+      </div>
+      <div className="accordion" id="accordionPanelsStayOpenExample">
+      <h3>Menu List:</h3>
+      <hr/>
+      {menuList.map((key, menu) => {
+        return (
+          <div className="accordion-item">
+            <h2 className="accordion-header" id="panelsStayOpen-headingOne">
+              <button
+                className="accordion-button"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#panelsStayOpen-collapseOne"
+                aria-expanded="true"
+                aria-controls="panelsStayOpen-collapseOne"
+              >
+                Accordion Item #1
+              </button>
+            </h2>
+            <div
+              id="panelsStayOpen-collapseOne"
+              className="accordion-collapse collapse show"
+              aria-labelledby="panelsStayOpen-headingOne"
+            >
+              <div className="accordion-body">
+                <strong>This is the first item's accordion body.</strong> It is
+                shown by default, until the collapse plugin adds the appropriate
+                classNamees that we use to style each element. These classNamees control
+                the overall appearance, as well as the showing and hiding via
+                CSS transitions. You can modify any of this with custom CSS or
+                overriding our default variables. It's also worth noting that
+                just about any HTML can go within the{" "}
+                <code>.accordion-body</code>, though the transition does limit
+                overflow.
+              </div>
+            </div>
+          </div>
+        );
+      })}
+      </div>
+    </div>
+  );
+}
