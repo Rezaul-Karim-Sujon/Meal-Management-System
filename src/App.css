@@ -1,0 +1,196 @@
+.app{
+  height: 100vh;
+  width: 100vw;
+}
+.sidemenu{
+  float: left;
+  height: 100%;
+  width: 20%;
+  background-color: #2F4050;
+}
+.homepage{
+  height: 100%;
+  width: 80%;
+}
+
+.sideBarList{
+  height: auto;
+  padding:0;
+  width: 100%;
+}
+
+.sideBarList .row{
+width: 100%;
+height: 60px;
+list-style-type: none;
+margin: 0%;
+display: flex;
+flex-direction: row;
+color: white;
+justify-content: center;
+align-items: center;
+font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
+
+.sideBarList .row:hover{
+  cursor: pointer;
+  background-color: #293846;
+}
+
+.row .icon{
+  flex:30%;
+  display: grid;
+  place-items: center;
+}
+.row .title{
+  flex: 70%;
+}
+
+.loginForm{
+  position: absolute;
+  left: 50%;
+  top: 45%;
+  transform: translate(-50%, -50%);
+  border: 1px solid #bbbbb7;
+  padding-left: 20px;
+  padding-right: 10px;
+  height: 50%;
+  width: 45%;
+  box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
+  border-radius: 5px;
+}
+.signUpForm{
+  position: absolute;
+  left: 50%;
+  top: 45%;
+  transform: translate(-50%, -50%);
+  border: 1px solid #bbbbb7;
+  padding-left: 20px;
+  padding-right: 10px;
+  height: 70%;
+  width: 50%;
+  box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
+  border-radius: 5px;
+}
+
+@media (max-width: 800px) {
+  .itemHeaderDiv .searchDiv{
+    padding-right: 0px;
+    }
+  .itemHeaderDiv{
+    padding: 5px;
+  }
+  .sidemenu{
+    width: 40%;
+  }
+  .homepage{
+    width:60%;
+  }
+  .createMenu{
+    text-align: center;
+    margin-left: 30%;
+    width:100%;
+  
+  }
+  .menulist{
+    margin-left: 30%;
+    padding: 4%;
+    width: 100%;
+  }
+
+  .loginForm{
+    height: 60%;
+    width: 80%;
+  }
+  .signUpForm{
+    height: auto;
+    width: auto;
+  }
+  .forgetpass{
+    margin-left: 5px;
+  }
+ }
+
+.loginForm >div{
+  margin-top: 30px;
+}
+
+.loginForm #loginBtn{
+  margin-left: 60%;
+  margin-top: 20px;
+}
+
+.forgetpass{
+  margin-left: 35%;
+  color: red;
+}
+.createAccount{
+  margin-left: 10%;
+  color: #369436;
+}
+
+.createBtndiv{
+  float:left
+}
+
+#signInBtn{
+  margin-left:180px ;
+}
+
+.itemHeaderDiv{
+  align-items: center;
+  margin-top: 0px ;
+  margin-bottom: 20;
+  padding: 20px;
+  background-color:gainsboro;
+}
+
+.itemHeaderDiv .itemAddBtnDiv{
+  float: left;
+  width: 20%;
+}
+
+.itemHeaderDiv .searchDiv{
+float: right;
+width: 80%;
+padding-right: 10%;
+}
+
+.modal-body{
+  height: auto;
+  width: 100%;
+  padding: 20px;
+}
+
+.selectedCard{
+  background-color:palegreen;
+  opacity: .9;
+  cursor:pointer;
+}
+
+.selectedItems{
+  margin: 10px;
+  padding: 10px;
+  background-color:#bbbbb7;
+ justify-items: center;
+}
+
+.selectedItems > div{
+  margin-left: 40px;
+}
+
+.createMenuBtn{
+ float: right;
+}
+
+.createMenu{
+  text-align: center;
+  margin-left: 20%;
+  width:100%;
+
+}
+.menulist{
+  margin-left: 20%;
+  padding: 4%;
+  width: 100%;
+}
