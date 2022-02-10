@@ -26,6 +26,7 @@ namespace Meal_Management_Web_API.Controllers
         {
             return await _context.Meals
                 .Include(e=>e.Menu)
+                .Include(e=>e.CompanyInfo)
                 .ToListAsync();
         }
 

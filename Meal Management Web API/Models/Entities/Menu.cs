@@ -8,13 +8,12 @@ namespace Meal_Management_Web_API.Models.Entities
 {
     public class Menu: BaseEntity
     {
-        [ForeignKey("FoodItem")]
-        public int FoodItemId { get; set; }
-        public bool IsDefault { get; set; }
-        public int GroupId { get; set; }
-        public bool FixedItem { get; set; }
-        public virtual FoodItem FoodItems { get; set; }
+        public DateTime CT { get; set; }
+        [ForeignKey("CompanyInfo")]
+        public int? CompanyInfoId { get; set; }
+        public virtual CompanyInfo CompanyInfo { get; set; }
         [NotMapped]
+        public virtual IEnumerable<MenuItem> MenuItems { get; set; }
         public virtual IEnumerable<Meal> Meals { get; set; }
     }
 }

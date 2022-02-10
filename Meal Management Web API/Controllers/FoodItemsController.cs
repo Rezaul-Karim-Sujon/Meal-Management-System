@@ -28,6 +28,7 @@ namespace Meal_Management_Web_API.Controllers
         public async Task<ActionResult<IEnumerable<FoodItem>>> GetFoodItems()
         {
             var database = _context.FoodItems
+                .AsNoTracking()
                 .Include(e => e.CompanyInfo)
                 .Include(e => e.FoodCategory)
                 .ToListAsync();

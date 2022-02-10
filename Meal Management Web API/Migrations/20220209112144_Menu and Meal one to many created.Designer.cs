@@ -4,14 +4,16 @@ using Meal_Management_Web_API.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Meal_Management_Web_API.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220209112144_Menu and Meal one to many created")]
+    partial class MenuandMealonetomanycreated
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -87,9 +89,6 @@ namespace Meal_Management_Web_API.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("CompanyInfoId")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
 
@@ -106,8 +105,6 @@ namespace Meal_Management_Web_API.Migrations
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CompanyInfoId");
 
                     b.HasIndex("MenuId");
 
@@ -288,10 +285,6 @@ namespace Meal_Management_Web_API.Migrations
 
             modelBuilder.Entity("Meal_Management_Web_API.Models.Entities.Meal", b =>
                 {
-                    b.HasOne("Meal_Management_Web_API.Models.Entities.CompanyInfo", "CompanyInfo")
-                        .WithMany("Meals")
-                        .HasForeignKey("CompanyInfoId");
-
                     b.HasOne("Meal_Management_Web_API.Models.Entities.Menu", "Menu")
                         .WithMany("Meals")
                         .HasForeignKey("MenuId")
@@ -309,7 +302,7 @@ namespace Meal_Management_Web_API.Migrations
             modelBuilder.Entity("Meal_Management_Web_API.Models.Entities.MenuItem", b =>
                 {
                     b.HasOne("Meal_Management_Web_API.Models.Entities.Menu", "Menu")
-                        .WithMany()
+                        .WithMany("MenuItems")
                         .HasForeignKey("MenuId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -318,7 +311,7 @@ namespace Meal_Management_Web_API.Migrations
             modelBuilder.Entity("Meal_Management_Web_API.Models.Entities.MenuItemFoodItems", b =>
                 {
                     b.HasOne("Meal_Management_Web_API.Models.Entities.FoodItem", "FoodItem")
-                        .WithMany()
+                        .WithMany("MenuItemFoodItems")
                         .HasForeignKey("FoodItemId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();

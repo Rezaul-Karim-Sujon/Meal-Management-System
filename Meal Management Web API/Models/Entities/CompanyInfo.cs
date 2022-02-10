@@ -15,5 +15,8 @@ namespace Meal_Management_Web_API.Models.Entities
         public virtual IEnumerable<User> Users { get; set; }
         [NotMapped]
         public virtual IEnumerable<FoodItem> FoodItems { get; set; }
+        public virtual IEnumerable<Menu> Menus { get; set; }
+        [NotMapped]
+        public virtual IEnumerable<Meal> Meals { get; set; }
     }
 }

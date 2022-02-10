@@ -33,7 +33,9 @@ namespace Meal_Management_Web_API.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<User>>> GetUsers()
         {
-            return await _context.Users.ToListAsync();
+            return await _context.Users
+                .AsNoTracking()
+                .ToListAsync();
         }
 
         // GET: api/Users/5
@@ -128,7 +130,9 @@ namespace Meal_Management_Web_API.Controllers
         //POST: /api/Users/Login
         public async Task<ActionResult>Login(VMLogin filter)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(x=>x.Name==filter.Name || x.Email==filter.Name);
+            var user = await _context.Users
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x=>x.Name==filter.Name || x.Email==filter.Name);
             if (user == null) return BadRequest(new { message = "Invalid Credentials" });
             if (filter.Password != user.Password)
             {

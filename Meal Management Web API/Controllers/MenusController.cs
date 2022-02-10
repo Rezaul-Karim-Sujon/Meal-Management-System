@@ -6,8 +6,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Meal_Management_Web_API.Models.Entities;
-using Meal_Management_Web_API.Models.ViewModel;
-using Newtonsoft.Json;
 
 namespace Meal_Management_Web_API.Controllers
 {
@@ -26,7 +24,7 @@ namespace Meal_Management_Web_API.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Menu>>> GetMenus()
         {
-            return await _context.Menus.Include(e=>e.FoodItems).ToListAsync();
+            return await _context.Menus.ToListAsync();
         }
 
         // GET: api/Menus/5
@@ -79,21 +77,12 @@ namespace Meal_Management_Web_API.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
-        public async Task<ActionResult<Menu>> PostMenu(IEnumerable<Menu> menu)
+        public async Task<ActionResult<Menu>> PostMenu(Menu menu)
         {
-            foreach (var item in menu)
-            {
-                Menu value = new Menu
-                {
-                    FoodItemId = item.FoodItemId,
-                    IsDefault = item.IsDefault,
-                    GroupId = item.GroupId,
-                    FixedItem = item.FixedItem
-                };
-                _context.Add(value);
-            }
+            _context.Menus.Add(menu);
             await _context.SaveChangesAsync();
-            return Ok(menu);
+
+            return CreatedAtAction("GetMenu", new { id = menu.Id }, menu);
         }
 
         // DELETE: api/Menus/5

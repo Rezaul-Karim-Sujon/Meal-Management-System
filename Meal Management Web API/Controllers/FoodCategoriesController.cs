@@ -26,7 +26,10 @@ namespace Meal_Management_Web_API.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<FoodCategory>>> GetFoodCategories()
         {
-            return await _context.FoodCategories.OrderBy(x=>x.Id).ToListAsync();
+            return await _context.FoodCategories
+                .AsNoTracking()
+                .OrderBy(x=>x.Id)
+                .ToListAsync();
         }
 
         // GET: api/FoodCategories/5

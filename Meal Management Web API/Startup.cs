@@ -37,7 +37,7 @@ namespace Meal_Management_Web_API
                 options.SerializerSettings.ReferenceLoopHandling=Newtonsoft.Json.ReferenceLoopHandling.Ignore
                 );
             services.AddDbContext<AppDbContext>(options =>
-            options.UseSqlServer(Configuration.GetConnectionString("AppContext")));
+            options.UseSqlServer(Configuration.GetConnectionString("AppContext")),ServiceLifetime.Transient);
             var key = Configuration["ApplicationSettings:JWT_secret"];
             services.AddAuthentication(x =>
             {
