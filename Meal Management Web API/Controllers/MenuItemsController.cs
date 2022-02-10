@@ -6,9 +6,12 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Meal_Management_Web_API.Models.Entities;
+using Meal_Management_Web_API.Models.ViewModel;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Meal_Management_Web_API.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class MenuItemsController : ControllerBase
@@ -24,7 +27,12 @@ namespace Meal_Management_Web_API.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<MenuItem>>> GetMenuItems()
         {
-            return await _context.MenuItems.ToListAsync();
+            return await _context.MenuItems
+                .Include(e=>e.MenuItemFoodItems)
+                .ThenInclude(e=>e.FoodItem)
+                .Include(e=>e.Menu)
+                .ThenInclude(e=>e.CompanyInfo)
+                .ToListAsync();
         }
 
         // GET: api/MenuItems/5
@@ -77,12 +85,38 @@ namespace Meal_Management_Web_API.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
-        public async Task<ActionResult<MenuItem>> PostMenuItem(MenuItem menuItem)
+        public async Task<ActionResult<MenuItem>> PostMenuItem(VMMenuItems menuItem)
         {
-            _context.MenuItems.Add(menuItem);
+            var menu = new Menu
+            {
+                CT = menuItem.CT,
+                CompanyInfoId = menuItem.CompanyInfoId
+            };
+            _context.Menus.Add(menu);
             await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetMenuItem", new { id = menuItem.Id }, menuItem);
+            var menuId = _context.Menus.Max(e => e.Id);
+            foreach(var item in menuItem.MenuItems)
+            {
+                var NewMenuItem = new MenuItem
+                {
+                    MenuId = menuId,
+                    IsDefault = item.IsDefault,
+                    GroupId = item.GroupId,
+                    FixedItem = item.FixedItem
+                };
+                _context.MenuItems.Add(NewMenuItem);
+                await _context.SaveChangesAsync();
+                var NewFoodItems = _context.FoodItems.Find(item.FoodItemId);
+                var NewMenuItemFoodItems = new MenuItemFoodItems
+                {
+                    FoodItem = NewFoodItems,
+                    MenuItem = NewMenuItem
+                };
+                _context.MenuItemFoodItems.Add(NewMenuItemFoodItems);
+                await _context.SaveChangesAsync();
+            }
+            return Ok(menuItem);
+            //return CreatedAtAction("GetMenuItem", new { id = menuItem.Id }, menuItem);
         }
 
         // DELETE: api/MenuItems/5

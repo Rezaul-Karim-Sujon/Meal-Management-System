@@ -6,58 +6,53 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Meal_Management_Web_API.Models.Entities;
-using Microsoft.AspNetCore.Authorization;
 
 namespace Meal_Management_Web_API.Controllers
 {
-    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
-    public class FoodCategoriesController : ControllerBase
+    public class MenusController : ControllerBase
     {
         private readonly AppDbContext _context;
 
-        public FoodCategoriesController(AppDbContext context)
+        public MenusController(AppDbContext context)
         {
             _context = context;
         }
 
-        // GET: api/FoodCategories
+        // GET: api/Menus
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<FoodCategory>>> GetFoodCategories()
+        public async Task<ActionResult<IEnumerable<Menu>>> GetMenus()
         {
-            return await _context.FoodCategories
-                .AsNoTracking()
-                .OrderBy(x=>x.Id)
-                .ToListAsync();
+            return await _context.Menus.ToListAsync();
         }
 
-        // GET: api/FoodCategories/5
+        // GET: api/Menus/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<FoodCategory>> GetFoodCategory(int id)
+        public async Task<ActionResult<Menu>> GetMenu(int id)
         {
-            var foodCategory = await _context.FoodCategories.FindAsync(id);
+            var menu = await _context.Menus.FindAsync(id);
 
-            if (foodCategory == null)
+            if (menu == null)
             {
                 return NotFound();
             }
 
-            return foodCategory;
+            return menu;
         }
 
-        // PUT: api/FoodCategories/5
+        // PUT: api/Menus/5
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutFoodCategory(int id, FoodCategory foodCategory)
+        public async Task<IActionResult> PutMenu(int id, Menu menu)
         {
-            if (id != foodCategory.Id)
+            if (id != menu.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(foodCategory).State = EntityState.Modified;
+            _context.Entry(menu).State = EntityState.Modified;
 
             try
             {
@@ -65,7 +60,7 @@ namespace Meal_Management_Web_API.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!FoodCategoryExists(id))
+                if (!MenuExists(id))
                 {
                     return NotFound();
                 }
@@ -78,37 +73,37 @@ namespace Meal_Management_Web_API.Controllers
             return NoContent();
         }
 
-        // POST: api/FoodCategories
+        // POST: api/Menus
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
-        public async Task<ActionResult<FoodCategory>> PostFoodCategory(FoodCategory foodCategory)
+        public async Task<ActionResult<Menu>> PostMenu(Menu menu)
         {
-            _context.FoodCategories.Add(foodCategory);
+            _context.Menus.Add(menu);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetFoodCategory", new { id = foodCategory.Id }, foodCategory);
+            return CreatedAtAction("GetMenu", new { id = menu.Id }, menu);
         }
 
-        // DELETE: api/FoodCategories/5
+        // DELETE: api/Menus/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<FoodCategory>> DeleteFoodCategory(int id)
+        public async Task<ActionResult<Menu>> DeleteMenu(int id)
         {
-            var foodCategory = await _context.FoodCategories.FindAsync(id);
-            if (foodCategory == null)
+            var menu = await _context.Menus.FindAsync(id);
+            if (menu == null)
             {
                 return NotFound();
             }
 
-            _context.FoodCategories.Remove(foodCategory);
+            _context.Menus.Remove(menu);
             await _context.SaveChangesAsync();
 
-            return foodCategory;
+            return menu;
         }
 
-        private bool FoodCategoryExists(int id)
+        private bool MenuExists(int id)
         {
-            return _context.FoodCategories.Any(e => e.Id == id);
+            return _context.Menus.Any(e => e.Id == id);
         }
     }
 }
