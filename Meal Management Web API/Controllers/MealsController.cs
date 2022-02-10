@@ -24,7 +24,10 @@ namespace Meal_Management_Web_API.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Meal>>> GetMeals()
         {
-            return await _context.Meals.ToListAsync();
+            return await _context.Meals
+                .Include(e=>e.Menu)
+                .Include(e=>e.CompanyInfo)
+                .ToListAsync();
         }
 
         // GET: api/Meals/5

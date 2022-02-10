@@ -12,6 +12,9 @@ namespace Meal_Management_Web_API.Models.Entities
         public DateTime Date { get; set; }
         public DateTime StartTime { get; set; }
         public DateTime ExpireTime { get; set; }
+        [ForeignKey("CompanyInfo")]
+        public int? CompanyInfoId { get; set; }
+        public virtual CompanyInfo CompanyInfo { get; set; }
         [ForeignKey("Menu")]
         public int MenuId { get; set; }
         public virtual Menu Menu { get; set; }
