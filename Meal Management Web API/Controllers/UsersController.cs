@@ -12,6 +12,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Authorization;
+using Meal_Management_Web_API.Models.Others;
 
 namespace Meal_Management_Web_API.Controllers
 {
@@ -46,10 +47,16 @@ namespace Meal_Management_Web_API.Controllers
 
             if (user == null)
             {
-                return NotFound();
+                return NotFound(new ResponseModel {
+                    Success = false,
+                    Message = "User not found"
+                });
             }
 
-            return user;
+            return Ok(new ResponseModel {
+                Success = true,
+                Data=user
+            });
         }
         
         // PUT: api/Users/5
@@ -61,7 +68,11 @@ namespace Meal_Management_Web_API.Controllers
         {
             if (id != user.Id)
             {
-                return BadRequest();
+                return BadRequest(new ResponseModel {
+                    Success=false,
+                    Message="Access Denied",
+                    Details="Id and User Id don't match",
+                });
             }
 
             _context.Entry(user).State = EntityState.Modified;
@@ -74,15 +85,22 @@ namespace Meal_Management_Web_API.Controllers
             {
                 if (!UserExists(id))
                 {
-                    return NotFound();
+                    return NotFound(new ResponseModel {
+                        Success=false,
+                        Message="User Not Found"
+                    });
                 }
                 else
                 {
                     throw;
                 }
             }
-
-            return NoContent();
+            return Ok(new ResponseModel {
+                Success = true,
+                Message = "Edit Successful",
+                Details = "User details edit successful",
+                Data = user
+            });
         }
         
         // POST: api/Users
@@ -105,8 +123,10 @@ namespace Meal_Management_Web_API.Controllers
             };
             _context.Users.Add(result);
             await _context.SaveChangesAsync();
-
-            return Ok();
+            return Ok(new ResponseModel {
+                Success=true,
+                Message= "User Create Successful"
+            });
         }
 
         // DELETE: api/Users/5
@@ -116,13 +136,19 @@ namespace Meal_Management_Web_API.Controllers
             var user = await _context.Users.FindAsync(id);
             if (user == null)
             {
-                return NotFound();
+                return NotFound(new ResponseModel {
+                    Success=false,
+                    Message="User Not found"
+                });
             }
 
             _context.Users.Remove(user);
             await _context.SaveChangesAsync();
 
-            return user;
+            return Ok(new ResponseModel {
+                Success=true,
+                Message="User Successfully Deleted"
+            });
         }
         [AllowAnonymous]
         [HttpPost]
@@ -133,13 +159,24 @@ namespace Meal_Management_Web_API.Controllers
             var user = await _context.Users
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x=>x.Name==filter.Name || x.Email==filter.Name);
-            if (user == null) return BadRequest(new { message = "Invalid Credentials" });
+            if (user == null) return BadRequest(new ResponseModel{
+                Success =false,
+                Message = "Invalid Credentials"
+            });
             if (filter.Password != user.Password)
             {
-                return BadRequest(new { message = "Wrong Password" });
+                return BadRequest(new ResponseModel{
+                    Success = false,
+                    Message = "Wrong Password"
+                });
             }
             string Token= _jwtAuthenticationManager.Authenticate(user);
-            return Ok(new { Token, user });
+            return Ok(new ResponseModel{
+                Success = true,
+                Message = "Log In Successful",
+                Details= Token,
+                Data=user 
+            });
         }
         private bool UserExists(int id)
         {
