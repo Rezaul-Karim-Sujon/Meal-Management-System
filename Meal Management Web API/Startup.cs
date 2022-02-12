@@ -2,6 +2,7 @@ using Meal_Management_Web_API.Models.Entities;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -10,9 +11,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
@@ -32,12 +35,15 @@ namespace Meal_Management_Web_API
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddCors();
+
             services.AddControllers()
                 .AddNewtonsoftJson(options =>
                 options.SerializerSettings.ReferenceLoopHandling=Newtonsoft.Json.ReferenceLoopHandling.Ignore
                 );
+
             services.AddDbContext<AppDbContext>(options =>
             options.UseSqlServer(Configuration.GetConnectionString("AppContext")),ServiceLifetime.Transient);
+            
             var key = Configuration["ApplicationSettings:JWT_secret"];
             services.AddAuthentication(x =>
             {
@@ -71,6 +77,20 @@ namespace Meal_Management_Web_API
                 .WithOrigins("http://localhost:3000")
                 .AllowAnyMethod()
                 .AllowAnyHeader();
+            });
+            var Authentication = Configuration["ApplicationSettings:Authentication"];
+            var Message = Configuration["ApplicationSettings:Message"];
+            app.Use(async (context, next) =>
+            {
+                await next();
+
+                if (context.Response.StatusCode == (int)HttpStatusCode.Unauthorized)
+                {
+                    context.Response.ContentType = "application/json";
+                    await context
+                    .Response
+                    .WriteAsync(JsonConvert.SerializeObject( new { Authentication, Message }));
+                }
             });
             app.UseRouting();
             app.UseAuthentication();
