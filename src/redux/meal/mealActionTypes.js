@@ -1,0 +1,2 @@
+export const UPDATE_MEAL_LIST = 'UPDATE_MEAL_LIST'
+
