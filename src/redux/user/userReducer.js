@@ -1,10 +1,9 @@
-import { LOGIN, LOGOUT } from "./userActionTypes"
-import { getToken } from "../../utils/tokenFunction"
+import { LOGIN, LOGIN_FAILED, LOGOUT } from "./userActionTypes"
 
 const initialState={
-    token:getToken(),
     user:{},
-    isAuthenticate:false
+    isAuthenticate:false,
+    errorMessage:""
 }
 
 const userReducer = (state = initialState,action)=>{
@@ -13,15 +12,22 @@ const userReducer = (state = initialState,action)=>{
             return{
                 ...state,
                 isAuthenticate:true,
-                user:action.payloads.user,
-                token:action.payloads.token
+                user:action.payloads.data,
+                errorMessage:""
             }
+        case LOGIN_FAILED:
+            return{
+                ...state,
+                isAuthenticate:false,
+                user:{},
+                errorMessage:action.payloads.message
+            }     
         case LOGOUT:
             return{
                 ...state,
                 isAuthenticate:false,
                 user:{},
-                token:{}
+                errorMessage:""
             }    
         default:return state    
     }

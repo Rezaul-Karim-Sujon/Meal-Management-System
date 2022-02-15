@@ -4,7 +4,7 @@ import {Link} from 'react-router-dom'
 import { useSelector, useDispatch } from "react-redux";
 
 
-export default function Meal() {
+export default function AdminAccounts() {
   const companyId = useSelector(state =>state.user.user.companyId)
   const dispatch = useDispatch();
 

@@ -7,6 +7,7 @@
   height: 100%;
   width: 20%;
   background-color: #2F4050;
+  position: fixed;
 }
 .homepage{
   height: 100%;
@@ -171,7 +172,7 @@ padding-right: 10%;
 .selectedItems{
   margin: 10px;
   padding: 10px;
-  background-color:#bbbbb7;
+  background-color:#dbebeb;
  justify-items: center;
 }
 
@@ -185,12 +186,60 @@ padding-right: 10%;
 
 .createMenu{
   text-align: center;
-  margin-left: 20%;
+  margin-left: 25%;
   width:100%;
-
 }
 .menulist{
-  margin-left: 20%;
+  margin-left: 25%;
   padding: 4%;
   width: 100%;
+}
+
+.createMeal{
+  text-align: center;
+    margin-left: 25%;
+    width:100%;
+}
+
+.createMeal .itemList{
+  height: auto;
+  padding: 20px;
+  
+}
+.createMealForm{
+  padding-bottom: 20px;
+}
+.createMealForm >div{
+  margin-bottom: 10px;
+}
+
+.menulist_Heading{
+  margin-top: 15px ;
+  color:blue;
+}
+
+.foodItemsDiv{
+  margin-left: 25%;
+  padding: 4%;
+  width: 100%;
+}
+
+.foodCard{
+  max-width: 18rem;
+  float: left;
+  margin: 10px;
+  padding: 5px;
+  box-shadow: 5px;
+}
+.cardImage{
+  
+}
+
+.userProfile{
+  width: 100%;
+  height: 80px;
+  margin-left: 25%;
+  padding: 10px;
+  box-shadow: 5px;
+  background-color:#dbebeb;
 }

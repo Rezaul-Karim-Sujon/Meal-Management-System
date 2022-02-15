@@ -2,7 +2,7 @@ import { React, useEffect, useState } from "react";
 import axios from "axios";
 import ItemsModal from "./ItemsModal";
 import { useForm } from "react-hook-form";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom'; 
 
 import { useSelector, useDispatch } from 'react-redux';
 import {updateMenuListAction} from './../../redux/menu/menuListUpdateAction'
@@ -11,16 +11,17 @@ import {updateFoodItemsAction} from './../../redux/foodItems/foodItemsUpdateActi
 export default function CreateMenu() {
 
   let [selectedIds, setSelectedIds] = useState({ 5: false, 6: false });
+  let [defaultItems, setDefaultItems] = useState({ 5: false, 6: false });
   const menuList = useSelector(state =>state.menuList.menuList)
+  const companyId = useSelector(state =>state.user.user.companyId)
   const foodItems = useSelector(state =>state.foodItems.foodItems)
   const dispatch = useDispatch()
   const { register, handleSubmit } = useForm();
   const navigate = useNavigate();
- 
-
+  
   useEffect(() => {
     axios
-      .get("http://localhost:12269/api/foodItems")
+      .get("http://localhost:12269/api/foodItems",{"companyId":companyId})
       .then((res) => {
         dispatch(updateFoodItemsAction(res));
         let selectedIdsVar = {};
@@ -36,8 +37,20 @@ export default function CreateMenu() {
 
 
   useEffect(() => {
-    console.log("Local : ", selectedIds);
+    console.log("selected : ", defaultItems);
   }, [selectedIds]);
+  useEffect(() => {
+    console.log("defaultItems : ", defaultItems);
+  }, [defaultItems]);
+
+  const handleCheckboxClick = (foodId)=>{
+    const newDefaultItems = {
+      ...defaultItems,
+      [foodId]: !defaultItems[foodId],
+    };
+    setDefaultItems(newDefaultItems);
+    console.log('check ',newDefaultItems)
+  }
 
   const handleDelete = (foodId) => {
    if(window.confirm("Are You Sure to Delet?")===true){
@@ -50,34 +63,47 @@ export default function CreateMenu() {
     
   };
 
-  // const handleFoodItemIds = ()=>{
-  //   let ids=[...foodIds]
-  //   for (const key in selectedIds){
-  //     if(selectedIds[key]){
-  //       ids.push(key)
-  //     }
-  //   }
-  //   setFoodIds(ids);
-  //   console.log(foodIds)
-  //   console.log(ids)
-  // }
-
-
   const onSubmit = (data) => {
+    var today = new Date();
+    var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+    let newMenu={
+      dateCreate:date,
+      companyId:companyId,
+    }
+    let newMenuItemList = []
+    for(let key in data){
+      let newObj={
+        foodItemId:Number(key),
+        groupId:Number(data[key]),
+        isDefault:defaultItems[key],
+        fixedItem:Boolean(Number(data[key])===0)
+      }
+      console.log('newObj ',newObj)
+      newMenuItemList.push(newObj)
+    }
+    const reqObj={
+      menu:newMenu,
+      menuItems:newMenuItemList
+    }
     console.log(' data for menu items type: ',data)
-    navigate('/menuList')
-    // axios.post('http://localstorage:8000/menu',data)
-    // .then(response=>{
-    //   console.log(response)
-    // })
-    // .catch(err=>{
-    //   console.log(err)
-    // })
+    console.log(' item list from menu ',reqObj)
+    navigate('/adminDashboard/menuList')
+     axios.post('http://localhost:12269/api/Menus',reqObj)
+    .then(response=>{
+      console.log(' item list from menu ',response)
+      let oldMenuList = [...menuList]
+      oldMenuList.push(response)
+      dispatch(updateMenuListAction(oldMenuList))
+    })
+    .catch(err=>{
+      alert("Network Error! Try Again Latter")
+      console.log(err)
+    })
   }
 
 
   return (
-    <div className="createMenu">
+    <div className="createMenu container">
       <div className="itemHeaderDiv row">
         <div className="itemAddBtnDiv">
           <button
@@ -93,7 +119,7 @@ export default function CreateMenu() {
       <div>
         <h3>Food Items:</h3>
         <hr />
-        <form onSubmit={handleSubmit(onSubmit)} >
+        <form onSubmit={handleSubmit(onSubmit)}>
         <div>
           {/* {foods.map((key, value) => 
               <div key={key} className="row">
@@ -109,16 +135,20 @@ export default function CreateMenu() {
               <div>
                 Select Item Group:
                 <select {...register(String(5))}>
-                  <option value={"none"}>None</option>
-                  <option value={"A"}>A</option>
-                  <option value={"B"}>B</option>
-                  <option value={"C"}>C</option>
-                  <option value={"D"}>D</option>
-                  <option value={"AA"}>Option for A</option>
-                  <option value={"BB"}>Option for B</option>
-                  <option value={"CC"}>Option for C</option>
-                  <option value={"DD"}>Option for D</option>
+                <option value={0}>Fixed</option>
+                  <option value={1}>Group 1</option>
+                  <option value={2}>Group 2</option>
+                  <option value={3}>Group 3</option>
+                  <option value={4}>Group 4</option>
+                  <option value={5}>Group 5</option>
+                
                 </select>
+              </div>
+              <div className="form-check">
+                <input className="form-check-input" onClick={()=>handleCheckboxClick(5)} type="checkbox" value="" id="defaultCheck1"/>
+                <label className="form-check-label" for="defaultCheck1">
+                  Default Item
+                </label>
               </div>
               <div>
                 <button
@@ -138,16 +168,19 @@ export default function CreateMenu() {
               <div>
                 Select Item Group:
                 <select {...register(String(6))}>
-                <option value={"none"}>None</option>
-                  <option value={"A"}>A</option>
-                  <option value={"B"}>B</option>
-                  <option value={"C"}>C</option>
-                  <option value={"D"}>D</option>
-                  <option value={"AA"}>Option for A</option>
-                  <option value={"BB"}>Option for B</option>
-                  <option value={"CC"}>Option for C</option>
-                  <option value={"DD"}>Option for D</option>
+                  <option value={0}>Fixed</option>
+                  <option value={1}>Group 1</option>
+                  <option value={2}>Group 2</option>
+                  <option value={3}>Group 3</option>
+                  <option value={4}>Group 4</option>
+                  <option value={5}>Group 5</option>
                 </select>
+              </div>
+              <div className="form-check">
+                <input className="form-check-input" onClick={()=>handleCheckboxClick(6)} type="checkbox" value="" id="defaultCheck2"/>
+                <label className="form-check-label" for="defaultCheck2">
+                  Default Item
+                </label>
               </div>
               <div>
                 <button

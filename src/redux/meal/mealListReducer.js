@@ -1,12 +1,12 @@
-import {UPDATE_MENU_LIST} from "./menuActionTypes"
+import {UPDATE_MEAL_LIST} from "./mealActionTypes"
 
 const initialState={
-    menuList:[]
+    mealList:[]
 }
 
-const menuListReducer = (state = initialState,action)=>{
+const mealListReducer = (state = initialState,action)=>{
     switch(action.type){
-        case UPDATE_MENU_LIST:
+        case UPDATE_MEAL_LIST:
             return{
                 ...state,
                 menuList:action.payloads
@@ -15,4 +15,4 @@ const menuListReducer = (state = initialState,action)=>{
     }
 }
 
-export default menuListReducer
+export default mealListReducer
