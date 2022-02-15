@@ -1,53 +1,42 @@
-import React,{useEffect,useState} from 'react'
-import axios from 'axios'
-import {
-    Outlet,
-    BrowserRouter,
-    Routes,
-    Route
-  } from "react-router-dom";
-import Menulist from './AdminSidePages/Menulist'
-import Meal from './AdminSidePages/Meal'
-import FoodItems from './AdminSidePages/FoodItems'
-import Accounts from './AdminSidePages/Accounts'
-import SideMenu from './SideMenu';
-import { useSelector, useDispatch } from 'react-redux'
+import React, { useEffect, useState } from "react";
+import { Navigate, Outlet, useNavigate } from "react-router-dom";
+import SideMenu from "./SideMenu";
+import UserProfile from "./UserProfile";
+import Auth from "./Auth"
+import { useSelector, useDispatch } from "react-redux";
+import axios from "axios"
+import { userLoginAction } from "../redux/user/userLoginAction";
+import { userLoginFailedAction } from "./../redux/user/userLoginFailedAction";
 
 
-export default function Home({token}) {
- const [user,setUser]= useState({})
- const user2 = useSelector(state =>state.user.user)
- const dispatch = useDispatch()
+export default function Home({ token }) {
+  const user = useSelector((state) => state.user.user);
+  const isAuthenticate = true//useSelector((state) => state.user.isAuthenticate);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
- /*
-useEffect(() => {
+  useEffect(()=>{
     const config={
-        headers:{
-            Authorization:'Bearer '+token
-        }
+      Headers:{
+        Authorization:localStorage.getItem('token')
+      }
     }
-    axios.get('user',config).then(
-        res=>{
-            setUser(res.data)
-        },
-        err=>{
-            console.log(err)
-        }
-    )
-    return () => {
-        cleanup
-    }
-}, [input])
+    axios.get('http://localstorage:8000/user',config)
+    .then(response=>{
+      if(response.success===true){
+        localStorage.setItem('token',response.details)
+        dispatch(userLoginAction(response))
+      }
+    })
+    .catch(err=>{
+      console.log(err)
+    })
+  },[]) 
 
-*/
-    return (
-        <>
-                
-        <div className='homepage'>
-        <SideMenu/>
-        <Outlet />
-        </div>
-             
-        </>
-    )
+  return (
+    <>
+    <Outlet/>
+    </>
+    
+  )
 }

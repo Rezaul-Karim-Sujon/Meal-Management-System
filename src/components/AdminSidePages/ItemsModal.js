@@ -38,7 +38,7 @@ export default function ItemsModal({foods,selectedIds, setSelectedIds}) {
           <div className="modal-content">
             <div className="modal-header">
               <h5 className="modal-title" id="exampleModalLabel">
-                Modal title
+                Food Items:
               </h5>
               <button
                 type="button"
@@ -48,10 +48,19 @@ export default function ItemsModal({foods,selectedIds, setSelectedIds}) {
               ></button>
             </div>
             <div className="modal-body">
-              <h3>Food Items:</h3>
+            <div className="searchDiv">
+          <input
+            type="text"
+            placeholder="Search Items"
+            className="form-control"
+          />
+        </div >
               <hr />
+              <div>
               {foods.map((key, food) => {
-                <div className="card">
+                <div className={
+                  selectedIdsLocal[food.foodItemId] === true ? "selectedCard" : "" + " card"
+                }>
                   <img src={food.picture} className="card-img-top" alt="..." />
                   <div className="card-body">
                     <h5 className="card-title">{food.foodName}</h5>
@@ -60,6 +69,7 @@ export default function ItemsModal({foods,selectedIds, setSelectedIds}) {
                   <button className="btn btn-danger btn-sm">Delet</button>
                 </div>;
               })}
+              </div>
 
               <div
                 onClick={(e) => handleClick(e)}

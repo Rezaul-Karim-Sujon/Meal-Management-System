@@ -3,21 +3,28 @@ import React from "react";
 import {Link ,Routes,Route, BrowserRouter} from "react-router-dom";
 import { useForm } from "react-hook-form";
 import axios from 'axios';
-import SignUp from "./SignUp";
 import { useSelector, useDispatch } from 'react-redux'
 import { userLoginAction } from "../redux/user/userLoginAction";
+import { userLoginFailedAction } from "./../redux/user/userLoginFailedAction";
+import { useNavigate } from 'react-router-dom'; 
 
 export default function App() {
   const dispatch = useDispatch()
-  
+  const errorMessage=useSelector(state=>state.user.errorMessage)
   const { register, handleSubmit } = useForm();
-
+  const navigate = useNavigate();
 
   const onSubmit = (data) => {
-    axios.post('http://localstorage:8000/login',data)
+    navigate('/')
+    axios.post('http://localstorage:8000/users/login',data)
     .then(response=>{
-      localStorage.setItem('token',response.data.token)
-      dispatch(userLoginAction(response.data.user))
+      if(response.success===true){
+        localStorage.setItem('token',response.details)
+          navigate('/')
+        }
+      else{
+        dispatch(userLoginFailedAction(response))
+      }  
     })
     .catch(err=>{
       console.log(err)
@@ -42,7 +49,6 @@ export default function App() {
             type="text"
             {...register("email")}
             className="form-control"
-            id="staticEmail"
             defaultValue={"email@example.com"}
           />
         </div>
@@ -56,10 +62,11 @@ export default function App() {
             type="password"
             {...register("password")}
             className="form-control"
-            id="inputPassword"
           />
         </div>
+        {errorMessage !==""?<span>{errorMessage}</span>:""}
       </div>
+      <div>{errorMessage}</div>
       {/* errors will return when field validation fails  */}
       {/*errors.exampleRequired && <span>This field is required</span>*/}
       <input type="submit" id="loginBtn" className="btn btn-primary" />

@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import axios from "axios";
 import { useForm } from "react-hook-form";
-import DisplayFoodItems from "./DisplayFoodItems";
 import { useSelector, useDispatch } from 'react-redux';
 import {updateFoodItemsAction} from './../../redux/foodItems/foodItemsUpdateAction'
 
@@ -13,27 +12,35 @@ export default function FoodItems() {
   const dispatch = useDispatch()
 
   useEffect(()=>{
-    axios
-    .get("http://localhost:12269/api/foodItems")
-    .then((res) => {
-      dispatch(updateFoodItemsAction(res))
+     axios
+     .get("http://localhost:12269/api/foodItems",{"companyId":companyId})
+     .then((res) => {
+       dispatch(updateFoodItemsAction(res))
     })
     .catch((err) => {
       console.log(err);
     })
-  },[foodItems])
+   },[])
+
+   useEffect(()=>{
+console.log("strore ",foodItems)
+   },[foodItems])
+
 
   const onSubmit = (data) => {
     let picture = data.picture[0];
-    console.log('tst  ..  ',data)
     let reader = new FileReader();
     reader.readAsDataURL(picture);
     reader.onload = (e) => {
       data.picture = e.target.result;
       data.companyId = companyId
       console.log("client data ", data);
+      let newFoodItems = [...foodItems]
+      console.log("lastnewFoodItems ",newFoodItems)
+      newFoodItems.push(data)
+      dispatch(updateFoodItemsAction(newFoodItems))
       axios
-        .post("http://localhost:12269/api/Users", data)
+        .post("http://localhost:12269/api/foodItems", data)
         .then((res) => {
           let newFoodItems = [...foodItems]
           newFoodItems.push(res)
@@ -47,7 +54,7 @@ export default function FoodItems() {
   };
 
   return (
-    <>
+    <div className="foodItemsDiv">
       <div className="itemHeaderDiv row">
         <div className="itemAddBtnDiv">
           <button
@@ -113,11 +120,11 @@ export default function FoodItems() {
                 <div className="row">
                   <label className="col-sm-3 col-form-label">Category</label>
                   <div className="col-sm-9">
-                    <select name="company" {...register("category")} id="cars">
-                      <option value="volvo">Fish</option>
-                      <option value="saab">Mutton</option>
-                      <option value="mercedes">Rice</option>
-                      <option value="audi">Vagitables</option>
+                    <select {...register("category")} id="cars">
+                      <option value="Fish">Fish</option>
+                      <option value="Mutton">Mutton</option>
+                      <option value="Rice">Rice</option>
+                      <option value="Vagitables">Vagitables</option>
                     </select>
                   </div>
                   <div className="row">
@@ -152,7 +159,25 @@ export default function FoodItems() {
           </div>
         </div>
       </div>
-      <div className="foodItems"><DisplayFoodItems /></div>
-    </>
+      <h3>Food Items:</h3>
+<hr/>
+      <div className="foodItems grid">
+
+  {foodItems?.map((food,key)=>{
+    return(
+      <div key={food.id}  className="card foodCard col-sm-4" >
+      <h5 className="card-title">{food.foodName}</h5>
+      <img src={food.picture} className="card-img-top cardImage" alt="..."/>
+      {food.recipyName}
+      <div className="card-body">
+       
+        <p className="card-text">{food.recipy}</p>
+      </div>
+      <button className='btn btn-danger btn-sm'>Delet</button>
+    </div>
+    )
+  })}
+      </div>
+    </div>
   );
 }

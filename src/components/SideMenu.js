@@ -1,19 +1,17 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import '../App.css'
-import { SidebarData } from '../utils/SidebarData'
 
 
-export default function SideMenu() {
+export default function SideMenu({sideBarData}) {
     return (
         <>
             <div className='sidemenu'>
                 <nav className='sideBarList'>
-                    {SidebarData.map((val,key)=>{
+                    {sideBarData?.map((val,key)=>{
                         return(
                             <Link key = {key} className='row' to={val.link} >
                                 {" "}
-                                <div className='icon'>{val.icons}</div>{" "}
                                 <div className='title'>{val.title}</div>
                             </Link>    
                         )

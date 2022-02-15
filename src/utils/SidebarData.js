@@ -1,23 +1,47 @@
 
-import { AccessAlarm, ThreeDRotation } from '@material-ui/icons';export const SidebarData = [
+export const SidebarAdminData = [
     {
         title:"Meal",
-        icons:<ThreeDRotation />,
-        link:"/meal"
+        link:"meal"
     },
     {
         title:"MenuList",
-        icons:<AccessAlarm/>,
-        link:"/menuList"
+        link:"menuList"
     },
     {
         title:"Fooditems",
-        icons:<ThreeDRotation />,
-        link:"/fooditems"
+        link:"fooditems"
     },
     {
         title:"Accounts",
-        icons:<AccessAlarm/>,
-        link:"/accounts"
+        link:"accounts"
     }
+]
+
+
+export const SidebarSuperAdminData = [
+    {
+        title:"Companies",
+        link:"companies"
+    },
+    {
+        title:"Accounts",
+        link:"accounts"
+    }
+]
+
+
+export const UserData = [
+    {
+        title:"Meal",
+        link:"meal"
+    },
+    {
+        title:"MenuList",
+        link:"menuList"
+    },
+    {
+        title:"Fooditems",
+        link:"fooditems"
+    },
 ]
