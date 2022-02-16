@@ -5,10 +5,9 @@ import UserProfile from "./UserProfile";
 import Auth from "./Auth"
 import { useSelector, useDispatch } from "react-redux";
 import axios from "axios"
-import { userLoginAction } from "../redux/user/userLoginAction";
 
 
-export default function Home({ token }) {
+export default function Home() {
   const user = useSelector((state) => state.user.user);
   const isAuthenticate = true//useSelector((state) => state.user.isAuthenticate);
   const dispatch = useDispatch();
