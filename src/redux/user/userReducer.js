@@ -1,4 +1,4 @@
-import { LOGIN, LOGIN_FAILED, LOGOUT } from "./userActionTypes"
+import { LOGIN, LOGOUT } from "./userActionTypes"
 
 const initialState={
     user:{},
@@ -15,13 +15,7 @@ const userReducer = (state = initialState,action)=>{
                 user:action.payloads,
                 errorMessage:""
             }
-        case LOGIN_FAILED:
-            return{
-                ...state,
-                isAuthenticate:false,
-                user:{},
-                errorMessage:action.payloads
-            }     
+               
         case LOGOUT:
             return{
                 ...state,

@@ -38,7 +38,7 @@ export default function SignUp() {
         }
       })
       .catch(err=>{
-        console.log(err)
+        setError("Network Error! Check Your Internet Connection")
       })
       //setImage(e.target.result)
     }

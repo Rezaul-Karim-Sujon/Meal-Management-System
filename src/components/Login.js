@@ -1,10 +1,9 @@
 import "../App.css";
-import React from "react";
+import React,{useState} from "react";
 import {Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { useSelector, useDispatch } from 'react-redux'
 import { userLoginAction } from "../redux/user/userLoginAction";
-import { userLoginFailedAction } from "./../redux/user/userLoginFailedAction";
 import { useNavigate } from 'react-router-dom'; 
 import axiosInstance from "../utils/helperAxios";
 
@@ -13,6 +12,7 @@ export default function App() {
   const errorMessage=useSelector(state=>state.user.errorMessage)
   const { register, handleSubmit } = useForm();
   const navigate = useNavigate();
+  const [error,setError]=useState(null)
 
   const onSubmit = (data) => {
     axiosInstance.post('users/login',data)
@@ -23,10 +23,11 @@ export default function App() {
           navigate('/dashboard')
         }
       else{
-        dispatch(userLoginFailedAction(response.data.message))
+        setError(response.data.message)
       }  
     })
     .catch(err=>{
+      setError("Network Eror! Check Your Internet Connection")
       console.log(err)
     })
   }
@@ -66,7 +67,7 @@ export default function App() {
         </div>
         {/* {errorMessage !==""?<span>{errorMessage}</span>:""} */}
       </div>
-      <div>{errorMessage}</div>
+      <div><span className="errorMessage">{error}</span></div>
       {/* errors will return when field validation fails  */}
       {/*errors.exampleRequired && <span>This field is required</span>*/}
       <input type="submit" id="loginBtn" className="btn btn-primary" />

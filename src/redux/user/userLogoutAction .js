@@ -1,5 +1,5 @@
 import { LOGOUT} from "./userActionTypes"
-export const userLogout = (userObj={})=>{
+export  const userLogoutAction = (userObj={})=>{
     return{
         type:LOGOUT,
         payloads:userObj

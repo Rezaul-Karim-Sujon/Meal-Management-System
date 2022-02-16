@@ -100,7 +100,7 @@ font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans
   }
 
   .loginForm{
-    height: 60%;
+    height: 70%;
     width: 80%;
   }
   .signUpForm{
@@ -118,7 +118,7 @@ font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans
 
 .loginForm #loginBtn{
   margin-left: 60%;
-  margin-top: 20px;
+  margin-top: 10px;
 }
 
 .forgetpass{
