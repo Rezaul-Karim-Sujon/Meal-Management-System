@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import {Link} from 'react-router-dom'
+import axiosInstance from "../../utils/helperAxios";
 import { useSelector, useDispatch } from 'react-redux';
 import {updateMenuListAction} from './../../redux/menu/menuListUpdateAction'
 
@@ -10,10 +11,10 @@ export default function Menulist() {
   const dispatch = useDispatch()
 
   useEffect(() => {
-    axios
-      .get("http://localhost:12269/api/Menus",{"companyId":companyId})
+    axiosInstance
+      .get("Menus",{"companyId":companyId})
       .then((res) => {
-        dispatch(updateMenuListAction(res));
+        dispatch(updateMenuListAction(res.data.data));
       })
       .catch((err) => {
         console.log(err);
@@ -23,7 +24,7 @@ export default function Menulist() {
     <div className="menulist ">
       <div className="itemHeaderDiv row">
         <div className="itemAddBtnDiv ">
-          <Link to="/adminDashboard/createMenu"><button
+          <Link to="/createMenu"><button
             className="btn btn-primary"
           >
             Create Menu
@@ -41,9 +42,9 @@ export default function Menulist() {
       <div className="accordion" id="accordionPanelsStayOpenExample">
       <h3>Menu List:</h3>
       <hr/>
-      {menuList.map((key,menu)=>{
+      {menuList.map((menu,key)=>{
           return (
-          <div class="accordion" id="accordionExample">
+          <div key={menu.menuId} class="accordion" id="accordionExample">
           <div class="accordion-item">
             <h2 class="accordion-header" id="headingOne">
               <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
@@ -52,10 +53,10 @@ export default function Menulist() {
             </h2>
             <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
               <div class="accordion-body">
-              {menuList.map((key2,menuObj)=>{
+              {menuList.map((menuObj,key2)=>{
                 return(
                   (menuObj.menuId === menu.menuId && menuObj.fixedItem === true)?
-                  <div className="d-flex">
+                  <div keu={menuObj.menuId} className="d-flex">
                     <div>{menuObj.menuItemFoodItems.picture}</div>
                     <div>{menuObj.menuItemFoodItems.recipeName}</div>
                     <div>Fixed Item</div>
@@ -66,7 +67,7 @@ export default function Menulist() {
               {menuList.map((key2,menuObj)=>{
                 return(
                   (menuObj.menuId === menu.menuId && menuObj.fixedItem === false) ?
-                  <div className="d-flex">
+                  <div keu={menuObj.menuId} className="d-flex">
                     <div>{menuObj.menuItemFoodItems.picture}</div>
                     <div>{menuObj.menuItemFoodItems.recipeName}</div>
                     <div>{menuObj.groupId}</div>

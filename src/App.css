@@ -100,7 +100,7 @@ font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans
   }
 
   .loginForm{
-    height: 60%;
+    height: 70%;
     width: 80%;
   }
   .signUpForm{
@@ -118,7 +118,7 @@ font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans
 
 .loginForm #loginBtn{
   margin-left: 60%;
-  margin-top: 20px;
+  margin-top: 10px;
 }
 
 .forgetpass{
@@ -242,4 +242,26 @@ padding-right: 10%;
   padding: 10px;
   box-shadow: 5px;
   background-color:#dbebeb;
+}
+
+.errorMessage{
+  color: red;
+  text-align: center;
+  padding-left: 20%;
+  padding-bottom: 5px;
+}
+
+.container-fluid.footer_div {
+  background-color: #000000eb;
+  color: #fff;
+  /* padding: 1px 0; */
+}
+
+p.footerDetails {
+    font-weight: 400;
+    display: block;
+    text-align: center;
+    margin-top: 61px;
+    margin-bottom: 0;
+    padding: 17px 0;
 }

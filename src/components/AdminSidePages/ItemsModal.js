@@ -1,8 +1,9 @@
 
 import { React, useEffect, useState } from "react";
-
+import {useSelector} from "react-redux"
 export default function ItemsModal({foods,selectedIds, setSelectedIds}) {
 
+  const foodItems = useSelector(state=>state.foodItems.foodItems)
   const [selectedIdsLocal, setSelectedIdsLocal] = useState(selectedIds);
 
   useEffect(()=>{
@@ -16,12 +17,22 @@ export default function ItemsModal({foods,selectedIds, setSelectedIds}) {
 
   const handleClick = (event) => {
     const foodsId = Number(event.target.dataset.id);
-    //if(selectedIds.hasOwnProperty(foodsId )){
-    const newSelectedIds = {
-      ...selectedIdsLocal,
-      [foodsId]: !selectedIds[foodsId],
-    };
-    setSelectedIdsLocal(newSelectedIds);
+    if(foodsId in selectedIdsLocal){
+      const newselectedIds = {
+        ...selectedIdsLocal,
+        [foodsId]: !selectedIdsLocal[foodsId],
+      }
+      setSelectedIdsLocal(newselectedIds);  
+      console.log("check ", newselectedIds);   
+    }
+    else{
+      const newselectedIds = {
+        ...selectedIdsLocal,
+        [foodsId]: true,
+      }
+      setSelectedIdsLocal(newselectedIds);
+      console.log("check ", newselectedIds);
+    }
 
   };
 
@@ -57,8 +68,11 @@ export default function ItemsModal({foods,selectedIds, setSelectedIds}) {
         </div >
               <hr />
               <div>
-              {foods.map((key, food) => {
-                <div className={
+              {foodItems.map((food,key) => {
+                <div
+                onClick={(e) => handleClick(e)}
+                data-id={food.id}
+                className={
                   selectedIdsLocal[food.foodItemId] === true ? "selectedCard" : "" + " card"
                 }>
                   <img src={food.picture} className="card-img-top" alt="..." />
@@ -70,28 +84,10 @@ export default function ItemsModal({foods,selectedIds, setSelectedIds}) {
                 </div>;
               })}
               </div>
+            </div>  
 
-              <div
-                onClick={(e) => handleClick(e)}
-                data-id={5}
-                className={
-                  selectedIdsLocal[5] === true ? "selectedCard" : "" + " card"
-                }
-              >
-                <img src="..." className="card-img-top" alt="..." data-id={5} />
-                <div className="card-body" data-id={5}>
-                  <h5 className="card-title" data-id={5}>
-                    Card title 5
-                  </h5>
-                  <p className="card-text" data-id={5}>
-                    Some quick example text to build on the card title and make
-                    up the bulk of the card's content.
-                  </p>
-                  <a href="#" className="btn btn-primary" data-id={5}>
-                    Go somewhere
-                  </a>
-                </div>
-              </div>
+              {/*
+              
               <div
                 className={
                   selectedIdsLocal[6] === true ? "selectedCard" : "" + " card"
@@ -114,6 +110,10 @@ export default function ItemsModal({foods,selectedIds, setSelectedIds}) {
                 </div>
               </div>
             </div>
+              */}
+
+              
+
             <div className="modal-footer">
               <button
                 type="button"

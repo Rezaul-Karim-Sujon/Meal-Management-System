@@ -1,11 +1,11 @@
 import { React, useEffect, useState } from "react";
-import axios from "axios";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import MenuListModal from "./MenuListModal";
 import { useSelector, useDispatch } from "react-redux";
 import { updateMenuListAction } from "./../../redux/menu/menuListUpdateAction";
 import { updateMealListAction } from "./../../redux/meal/mealListUpdateAction";
+import axiosInstance from "../../utils/helperAxios";
 
 export default function CreateMeal() {
   const { register, handleSubmit } = useForm();
@@ -18,10 +18,10 @@ export default function CreateMeal() {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    axios
-      .get("http://localhost:12269/api/Menus",{"companyId":companyId})
+    axiosInstance
+      .get("Menus",{"companyId":companyId})
       .then((res) => {
-        dispatch(updateMenuListAction(res));
+        dispatch(updateMenuListAction(res.data.data));
       })
       .catch((err) => {
         console.log(err);
@@ -34,13 +34,15 @@ export default function CreateMeal() {
     data.companyId = companyId;
     data.menuId = menuId;
     console.log(" data for menu items type: ", data);
-    navigate("/adminDashboard/meal");
-    axios
-      .post("http://localhost:12269/api/Meals", data)
+    axiosInstance
+      .post("Meals", data)
       .then((response) => {
+        if(response.data.success){
         let newMealList = [...mealList]
-        newMealList.push(response)
+        newMealList.push(response.data.data)
         dispatch(updateMealListAction(newMealList))
+        navigate("/meal");
+        }
       })
       .catch((err) => {
         console.log(err);
@@ -66,13 +68,13 @@ export default function CreateMeal() {
           </div>
           <div className="d-flex">
             <div className="col-sm-3">
-              <label htmlFor="staticEmail" className="col-sm-2 col-form-label">
+              <label  className="col-sm-2 col-form-label">
                 Date
               </label>
             </div>
             <div className="col-sm-3">
               <input
-                type="date"
+                type="date" required
                 {...register("date")}
                 className="form-control"
               />
@@ -80,13 +82,13 @@ export default function CreateMeal() {
           </div>
           <div className="d-flex">
             <div className="col-sm-3">
-              <label htmlFor="staticEmail" className="col-sm-2 col-form-label">
+              <label  className="col-sm-2 col-form-label">
                 Start-Time
               </label>
             </div>
             <div className="col-sm-3">
               <input
-                type="time"
+                type="time" required
                 {...register("startTime")}
                 className="form-control"
               />
@@ -94,13 +96,13 @@ export default function CreateMeal() {
           </div>
           <div className="d-flex">
             <div className="col-sm-3">
-              <label htmlFor="staticEmail" className="col-sm-2 col-form-label">
+              <label  className="col-sm-2 col-form-label">
                 Expired-Time
               </label>
             </div>
             <div className="col-sm-3">
               <input
-                type="time"
+                type="time" required
                 {...register("expireTime")}
                 className="form-control"
               />
@@ -118,7 +120,7 @@ export default function CreateMeal() {
                 type="button"
                 data-bs-toggle="modal"
                 data-bs-target="#exampleModal"
-                class="btn btn-link"
+                className="btn btn-link"
               >
                 select Menu
               </button>
@@ -131,7 +133,7 @@ export default function CreateMeal() {
               </h5>
               <hr />
               <div className="itemList">
-                {menuList.map((key2, menuObj) => {
+                {menuList.map((menuObj,key2) => {
                   return menuObj.menuId === menuId &&
                     menuObj.fixedItem === true ? (
                     <div className="d-flex">
@@ -143,7 +145,7 @@ export default function CreateMeal() {
                     ""
                   );
                 })}
-                {menuList.map((key2, menuObj) => {
+                {menuList.map((menuObj,key2) => {
                   return menuObj.menuId === menuId &&
                     menuObj.fixedItem === false ? (
                     <div className="d-flex">

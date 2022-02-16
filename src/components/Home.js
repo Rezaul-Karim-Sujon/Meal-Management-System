@@ -6,7 +6,6 @@ import Auth from "./Auth"
 import { useSelector, useDispatch } from "react-redux";
 import axios from "axios"
 import { userLoginAction } from "../redux/user/userLoginAction";
-import { userLoginFailedAction } from "./../redux/user/userLoginFailedAction";
 
 
 export default function Home({ token }) {
@@ -15,28 +14,12 @@ export default function Home({ token }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  useEffect(()=>{
-    const config={
-      Headers:{
-        Authorization:localStorage.getItem('token')
-      }
-    }
-    axios.get('http://localstorage:8000/user',config)
-    .then(response=>{
-      if(response.success===true){
-        localStorage.setItem('token',response.details)
-        dispatch(userLoginAction(response))
-      }
-    })
-    .catch(err=>{
-      console.log(err)
-    })
-  },[]) 
-
+ 
   return (
+    isAuthenticate?
     <>
     <Outlet/>
-    </>
+    </>:Navigate("login")
     
   )
 }
