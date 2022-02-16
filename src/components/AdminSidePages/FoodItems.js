@@ -1,8 +1,8 @@
 import { useEffect } from "react";
-import axios from "axios";
 import { useForm } from "react-hook-form";
 import { useSelector, useDispatch } from 'react-redux';
 import {updateFoodItemsAction} from './../../redux/foodItems/foodItemsUpdateAction'
+import axiosInstance from "../../utils/helperAxios";
 
 export default function FoodItems() {
   const { register, handleSubmit } = useForm();
@@ -12,10 +12,10 @@ export default function FoodItems() {
   const dispatch = useDispatch()
 
   useEffect(()=>{
-     axios
-     .get("http://localhost:12269/api/foodItems",{"companyId":companyId})
+    axiosInstance
+     .get("foodItems",{"companyId":companyId})
      .then((res) => {
-       dispatch(updateFoodItemsAction(res))
+       dispatch(updateFoodItemsAction(res.data.data))
     })
     .catch((err) => {
       console.log(err);
@@ -23,9 +23,17 @@ export default function FoodItems() {
    },[])
 
    useEffect(()=>{
-console.log("strore ",foodItems)
+  console.log("strore :foods ",foodItems)
    },[foodItems])
 
+   const handleDelete = (index)=>{
+     if(window.confirm("Are You Sure To Delet?")){
+       //api req for delete
+      const currFoods =[...foodItems]
+      let newFoodItems = currFoods.splice(index-1,1)
+      dispatch(updateFoodItemsAction(newFoodItems))
+     }
+   }
 
   const onSubmit = (data) => {
     let picture = data.picture[0];
@@ -35,16 +43,21 @@ console.log("strore ",foodItems)
       data.picture = e.target.result;
       data.companyId = companyId
       console.log("client data ", data);
-      let newFoodItems = [...foodItems]
-      console.log("lastnewFoodItems ",newFoodItems)
-      newFoodItems.push(data)
-      dispatch(updateFoodItemsAction(newFoodItems))
-      axios
-        .post("http://localhost:12269/api/foodItems", data)
+      // let newFoodItems = [...foodItems]
+      // console.log("lastnewFoodItems ",newFoodItems)
+      // newFoodItems.push(data)
+      // dispatch(updateFoodItemsAction(newFoodItems))
+      axiosInstance
+        .post("foodItems", data)
         .then((res) => {
-          let newFoodItems = [...foodItems]
-          newFoodItems.push(res)
-          dispatch(updateFoodItemsAction(newFoodItems))
+          if(res.data.success){
+            let newFoodItems = [...foodItems]
+            newFoodItems.push(res)
+            dispatch(updateFoodItemsAction(newFoodItems))
+          }
+          else{
+            alert(res.data.message)
+          }
         })
         .catch((err) => { 
           console.log(err);
@@ -101,7 +114,7 @@ console.log("strore ",foodItems)
                   <label className="col-sm-3 col-form-label">Food Name</label>
                   <div className="col-sm-9">
                     <input
-                      type="text"
+                      type="text" required
                       {...register("foodName")}
                       className="form-control"
                     />
@@ -110,7 +123,7 @@ console.log("strore ",foodItems)
                 <div className="row">
                   <label className="col-sm-3 col-form-label">Recipy Name</label>
                   <div className="col-sm-9">
-                    <input
+                    <input required
                       type="text"
                       {...register("recipy")}
                       className="form-control"
@@ -120,7 +133,7 @@ console.log("strore ",foodItems)
                 <div className="row">
                   <label className="col-sm-3 col-form-label">Category</label>
                   <div className="col-sm-9">
-                    <select {...register("category")} id="cars">
+                    <select {...register("category")} required>
                       <option value="Fish">Fish</option>
                       <option value="Mutton">Mutton</option>
                       <option value="Rice">Rice</option>
@@ -130,7 +143,7 @@ console.log("strore ",foodItems)
                   <div className="row">
                     <label className="col-sm-3 col-form-label">Picture</label>
                     <div className="col-sm-9">
-                      <input
+                      <input required
                         type="file"
                         accept="image/*"
                         className="form-control-file"
@@ -165,7 +178,7 @@ console.log("strore ",foodItems)
 
   {foodItems?.map((food,key)=>{
     return(
-      <div key={food.id}  className="card foodCard col-sm-4" >
+      <div key={key}  className="card foodCard col-sm-4" >
       <h5 className="card-title">{food.foodName}</h5>
       <img src={food.picture} className="card-img-top cardImage" alt="..."/>
       {food.recipyName}
@@ -173,7 +186,9 @@ console.log("strore ",foodItems)
        
         <p className="card-text">{food.recipy}</p>
       </div>
-      <button className='btn btn-danger btn-sm'>Delet</button>
+      <button className='btn btn-danger btn-sm'
+      onClick={()=>handleDelete(key)}
+      >Delet</button>
     </div>
     )
   })}

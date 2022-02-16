@@ -1,12 +1,12 @@
 export const setToken=(userToken)=> {
-    sessionStorage.setItem('userToken', JSON.stringify(userToken));
+    sessionStorage.setItem('token', JSON.stringify(userToken));
   }
   
 export const getToken =()=> {
-    const tokenString = sessionStorage.getItem('userToken');
+    const tokenString = sessionStorage.getItem('token');
     return JSON.parse(tokenString)?JSON.parse(tokenString):null
   }
 
-  export const removeToken=(userToken)=> {
-    sessionStorage.removeItem('userToken');
+  export const removeToken=()=> {
+    sessionStorage.removeItem('token');
   }  

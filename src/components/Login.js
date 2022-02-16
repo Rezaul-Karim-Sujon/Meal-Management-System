@@ -1,12 +1,12 @@
 import "../App.css";
 import React from "react";
-import {Link ,Routes,Route, BrowserRouter} from "react-router-dom";
+import {Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import axios from 'axios';
 import { useSelector, useDispatch } from 'react-redux'
 import { userLoginAction } from "../redux/user/userLoginAction";
 import { userLoginFailedAction } from "./../redux/user/userLoginFailedAction";
 import { useNavigate } from 'react-router-dom'; 
+import axiosInstance from "../utils/helperAxios";
 
 export default function App() {
   const dispatch = useDispatch()
@@ -15,15 +15,15 @@ export default function App() {
   const navigate = useNavigate();
 
   const onSubmit = (data) => {
-    navigate('/')
-    axios.post('http://localstorage:8000/users/login',data)
+    axiosInstance.post('users/login',data)
     .then(response=>{
-      if(response.success===true){
-        localStorage.setItem('token',response.details)
-          navigate('/')
+      if(response.data.success===true){
+        localStorage.setItem('token',response.data.details)
+        dispatch(userLoginAction(response.data.data))
+          navigate('/dashboard')
         }
       else{
-        dispatch(userLoginFailedAction(response))
+        dispatch(userLoginFailedAction(response.data.message))
       }  
     })
     .catch(err=>{
@@ -31,7 +31,6 @@ export default function App() {
     })
   }
 
-  //console.log(watch("example")); // watch input value by passing the name of it
 
   return (
     <>
@@ -47,9 +46,9 @@ export default function App() {
         <div className="col-sm-8">
           <input
             type="text"
-            {...register("email")}
+            {...register("name")}
             className="form-control"
-            defaultValue={"email@example.com"}
+            required
           />
         </div>
       </div>
@@ -62,9 +61,10 @@ export default function App() {
             type="password"
             {...register("password")}
             className="form-control"
+            required
           />
         </div>
-        {errorMessage !==""?<span>{errorMessage}</span>:""}
+        {/* {errorMessage !==""?<span>{errorMessage}</span>:""} */}
       </div>
       <div>{errorMessage}</div>
       {/* errors will return when field validation fails  */}

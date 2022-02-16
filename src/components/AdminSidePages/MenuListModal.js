@@ -7,8 +7,9 @@ const [selectedMenuId,setSelectedMenuId] = useState(menuId )
 useEffect(()=>{
 },[selectedMenuId])
 
+
   return( <>
-  <div className="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div className="modal fade" id="exampleModal" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div className="modal-dialog modal-xl modal-dialog-scrollable">
     <div className="modal-content">
       <div className="modal-header">
@@ -16,9 +17,9 @@ useEffect(()=>{
         <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div className="modal-body">
-        {menuList.map((key,menu)=>{
+        {menuList.map((menu,key)=>{
           return (
-          <div className="accordion" id="accordionExample">
+          <div key = {key} className="accordion" id="accordionExample">
           <div className={"accordion-item "+ menu.menuId === selectedMenuId?"selectedCard":""}>
             <h2 className="accordion-header" id="headingOne">
               <button className="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
@@ -27,10 +28,10 @@ useEffect(()=>{
             </h2>
             <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
               <div className="accordion-body">
-              {menuList.map((key2,menuObj)=>{
+              {menuList.map((menuObj,key2)=>{
                 return(
                   (menuObj.menuId === menu.menuId && menuObj.fixedItem === true)?
-                  <div className="d-flex">
+                  <div key={key2} className="d-flex">
                     <div>{menuObj.menuItemFoodItems.picture}</div>
                     <div>{menuObj.menuItemFoodItems.recipeName}</div>
                     <div>Fixed Item</div>
@@ -41,7 +42,7 @@ useEffect(()=>{
               {menuList.map((key2,menuObj)=>{
                 return(
                   (menuObj.menuId === menu.menuId && menuObj.fixedItem === false) ?
-                  <div className="d-flex">
+                  <div key={key2} className="d-flex">
                     <div>{menuObj.menuItemFoodItems.picture}</div>
                     <div>{menuObj.menuItemFoodItems.recipeName}</div>
                     <div>{menuObj.groupId}</div>

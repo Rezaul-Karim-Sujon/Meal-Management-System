@@ -15,28 +15,12 @@ export default function Home({ token }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  useEffect(()=>{
-    const config={
-      Headers:{
-        Authorization:localStorage.getItem('token')
-      }
-    }
-    axios.get('http://localstorage:8000/user',config)
-    .then(response=>{
-      if(response.success===true){
-        localStorage.setItem('token',response.details)
-        dispatch(userLoginAction(response))
-      }
-    })
-    .catch(err=>{
-      console.log(err)
-    })
-  },[]) 
-
+ 
   return (
+    isAuthenticate?
     <>
     <Outlet/>
-    </>
+    </>:Navigate("login")
     
   )
 }

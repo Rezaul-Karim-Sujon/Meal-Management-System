@@ -12,7 +12,7 @@ const userReducer = (state = initialState,action)=>{
             return{
                 ...state,
                 isAuthenticate:true,
-                user:action.payloads.data,
+                user:action.payloads,
                 errorMessage:""
             }
         case LOGIN_FAILED:
@@ -20,7 +20,7 @@ const userReducer = (state = initialState,action)=>{
                 ...state,
                 isAuthenticate:false,
                 user:{},
-                errorMessage:action.payloads.message
+                errorMessage:action.payloads
             }     
         case LOGOUT:
             return{

@@ -14,13 +14,17 @@ import PageNotFound from "./components/PageNotFound";
 import AdminAccounts from "./components/AdminAccounts"
 import Companies from "./components/Companies";
 import {useSelector} from "react-redux"
+import { useEffect } from "react";
+import Footer from "./components/Footer"
 
 
 function App() {
-  //const isAuthenticate=useSelector((state)=>state.user.isAuthenticate);
-  //const userType=useSelector((state)=>state.user.user.userType)
-  const isAuthenticate=true
-  const userType=2
+  const isAuthenticate=useSelector((state)=>state.user.isAuthenticate);
+  const userType=useSelector((state)=>state.user.user.userType)
+
+  useEffect(()=>{
+  },[userType,isAuthenticate])
+  
   return (
     <>
       <div className="app">
@@ -32,7 +36,7 @@ function App() {
             {/* //<Route element={<ProtecteedRoute />}> */}
             
             {(isAuthenticate&& userType===2) &&
-              <Route path="adminDashboard" element={<AdminDashboard />}>
+              <Route path="" element={<AdminDashboard />}>
                 <Route path="" element={<Meal />} />
                 <Route path="meal" element={<Meal />} />
                 <Route path="menuList" element={<Menulist />} />
@@ -44,7 +48,7 @@ function App() {
             
             }
             {(isAuthenticate&& userType===1) &&
-              <Route path="admin" element={<AdminDashboard />}>
+              <Route path="" element={<AdminDashboard />}>
                 <Route path="" element={<Companies />} />
                 <Route path="accounts" element={<AdminAccounts />} />
                 <Route path="companies" element={<Companies />} />
@@ -58,7 +62,9 @@ function App() {
           <Route path="*" element={<PageNotFound/>}/>
 
         </Routes>
+
       </div>
+      {/* <Footer /> */}
     </>
   );
 }
