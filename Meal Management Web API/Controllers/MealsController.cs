@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Meal_Management_Web_API.Models.Entities;
+using Meal_Management_Web_API.Models.Others;
 
 namespace Meal_Management_Web_API.Controllers
 {
@@ -25,6 +26,7 @@ namespace Meal_Management_Web_API.Controllers
         public async Task<ActionResult<IEnumerable<Meal>>> GetMeals()
         {
             return await _context.Meals
+                .AsNoTracking()
                 .Include(e=>e.Menu)
                 .Include(e=>e.CompanyInfo)
                 .ToListAsync();
@@ -38,10 +40,18 @@ namespace Meal_Management_Web_API.Controllers
 
             if (meal == null)
             {
-                return NotFound();
+                return NotFound(new ResponseModel
+                {
+                    Success = false,
+                    Message = "Meal not found"
+                });
             }
 
-            return meal;
+            return Ok(new ResponseModel
+            {
+                Success = true,
+                Data = meal
+            });
         }
 
         // PUT: api/Meals/5
@@ -52,7 +62,12 @@ namespace Meal_Management_Web_API.Controllers
         {
             if (id != meal.Id)
             {
-                return BadRequest();
+                return BadRequest(new ResponseModel
+                {
+                    Success = false,
+                    Message = "Access Denied",
+                    Details = "Id and meal Id don't match",
+                });
             }
 
             _context.Entry(meal).State = EntityState.Modified;
@@ -65,7 +80,11 @@ namespace Meal_Management_Web_API.Controllers
             {
                 if (!MealExists(id))
                 {
-                    return NotFound();
+                    return NotFound(new ResponseModel
+                    {
+                        Success = false,
+                        Message = "Meal Not found"
+                    });
                 }
                 else
                 {
@@ -73,7 +92,13 @@ namespace Meal_Management_Web_API.Controllers
                 }
             }
 
-            return NoContent();
+            return Ok(new ResponseModel
+            {
+                Success = true,
+                Message = "Edit Successful",
+                Details = "Meal details edit successful",
+                Data = meal
+            });
         }
 
         // POST: api/Meals
@@ -84,8 +109,13 @@ namespace Meal_Management_Web_API.Controllers
         {
             _context.Meals.Add(meal);
             await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetMeal", new { id = meal.Id }, meal);
+            var mealId = _context.Meals.Max(e => e.Id);
+            var Info=_context.Meals
+                .Include(e=>e.Menu)
+                .Include(e => e.CompanyInfo)
+                .Where(x=>x.Id==mealId)
+                .AsNoTracking();
+            return Ok(Info);
         }
 
         // DELETE: api/Meals/5
@@ -101,7 +131,11 @@ namespace Meal_Management_Web_API.Controllers
             _context.Meals.Remove(meal);
             await _context.SaveChangesAsync();
 
-            return meal;
+            return Ok(new ResponseModel
+            {
+                Success = true,
+                Message = "Delete Successful"
+            });
         }
 
         private bool MealExists(int id)
