@@ -28,6 +28,7 @@ namespace Meal_Management_Web_API.Controllers
         public async Task<ActionResult<IEnumerable<MenuItem>>> GetMenuItems()
         {
             return await _context.MenuItems
+                .AsNoTracking()
                 .Include(e=>e.MenuItemFoodItems)
                 .ThenInclude(e=>e.FoodItem)
                 .Include(e=>e.Menu)
@@ -115,7 +116,14 @@ namespace Meal_Management_Web_API.Controllers
                 _context.MenuItemFoodItems.Add(NewMenuItemFoodItems);
                 await _context.SaveChangesAsync();
             }
-            return Ok(menuItem);
+            var Info = _context.MenuItems
+                .AsNoTracking()
+                .Include(e => e.MenuItemFoodItems)
+                .ThenInclude(e => e.FoodItem)
+                .Include(e => e.Menu)
+                .ThenInclude(e => e.CompanyInfo)
+                .Where(x => x.MenuId == menuId);
+            return Ok(Info);
             //return CreatedAtAction("GetMenuItem", new { id = menuItem.Id }, menuItem);
         }
 
