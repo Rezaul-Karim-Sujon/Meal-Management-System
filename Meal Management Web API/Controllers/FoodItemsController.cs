@@ -92,9 +92,13 @@ namespace Meal_Management_Web_API.Controllers
         {
             _context.FoodItems.Add(foodItem);
             await _context.SaveChangesAsync();
-            return CreatedAtAction("GetFoodItem", new { 
-                id = foodItem.Id
-            }, foodItem);
+            var foodItemId = _context.FoodItems.Max(e => e.Id);
+            var Info = _context.FoodItems
+                .Include(e => e.CompanyInfo)
+                .Include(e=>e.FoodCategory)
+                .Where(x => x.Id == foodItemId)
+                .AsNoTracking();
+            return Ok(Info);
         }
 
         // DELETE: api/FoodItems/5
