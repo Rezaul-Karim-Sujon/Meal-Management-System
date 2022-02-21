@@ -1,5 +1,6 @@
 import React from 'react'
 import {useSelector,useDispatch} from "react-redux"
+import { Navigate } from 'react-router-dom'
 import {userLogoutAction} from "../redux/user/userLogoutAction "
 
 export default function UserProfile() {
@@ -9,7 +10,11 @@ export default function UserProfile() {
 
   const handleLogout = ()=>{
     dispatch(userLogoutAction())
+    console.log("user ",user)
+    localStorage.removeItem('token')
+    Navigate("/login")
   }
+
   return (
       <div>
           <div className='row userProfile'>

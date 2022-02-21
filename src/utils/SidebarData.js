@@ -1,16 +1,17 @@
 
 export const SidebarAdminData = [
+    
     {
-        title:"Meal",
-        link:"meal"
+        title:"Fooditems",
+        link:"fooditems"
     },
     {
         title:"MenuList",
         link:"menuList"
     },
     {
-        title:"Fooditems",
-        link:"fooditems"
+        title:"Meal",
+        link:"meal"
     },
     {
         title:"Accounts",
@@ -33,15 +34,15 @@ export const SidebarSuperAdminData = [
 
 export const UserData = [
     {
-        title:"Meal",
-        link:"meal"
+        title:"Fooditems",
+        link:"fooditems"
     },
     {
         title:"MenuList",
         link:"menuList"
     },
     {
-        title:"Fooditems",
-        link:"fooditems"
-    },
+        title:"Meal",
+        link:"meal"
+    }
 ]

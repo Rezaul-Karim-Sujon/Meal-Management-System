@@ -9,25 +9,27 @@ import { updateMenuListAction } from "./../../redux/menu/menuListUpdateAction";
 import { updateFoodItemsAction } from "./../../redux/foodItems/foodItemsUpdateAction";
 
 export default function CreateMenu() {
-  let [selectedIds, setSelectedIds] = useState();
-  let [defaultItems, setDefaultItems] = useState();
+  let [selectedIds, setSelectedIds] = useState({});
+  let [defaultItems, setDefaultItems] = useState({});
   const menuList = useSelector((state) => state.menuList.menuList);
   const companyId = useSelector((state) => state.user.user.companyId);
   const foodItems = useSelector((state) => state.foodItems.foodItems);
   const dispatch = useDispatch();
+  const token = localStorage.getItem("token");
   const { register, handleSubmit } = useForm();
   const navigate = useNavigate();
 
   useEffect(() => {
     if (foodItems.length === 0) {
-      axiosInstance
-        .get("foodItems", { companyId: companyId })
-        .then((res) => {
-          dispatch(updateFoodItemsAction(res.data.data));
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+      axios.get("http://localhost:12269/api/foodItems",
+      { headers: {"Authorization" : `Bearer ${token}`} })
+      .then(res=>{
+        console.log(res)
+        if(res.status===200){
+          dispatch(updateFoodItemsAction(res.data))
+        }
+      })
+      .catch(err=>console.log(err))
     }
   }, [foodItems]);
 
@@ -75,37 +77,42 @@ export default function CreateMenu() {
       (today.getMonth() + 1) +
       "-" +
       today.getDate();
-    let newMenu = {
-      dateCreate: date,
-      companyId: companyId,
-    };
+    // let newMenu = {
+    //   dateCreate: date,
+    //   companyId: companyId,
+    // };
     let newMenuItemList = [];
     for (let key in data) {
       let newObj = {
         foodItemId: Number(key),
         groupId: Number(data[key]),
-        isDefault: defaultItems[key],
+        isDefault: defaultItems[key]===true?true:false,
         fixedItem: Boolean(Number(data[key]) === 0),
       };
       console.log("newObj ", newObj);
       newMenuItemList.push(newObj);
     }
     const reqObj = {
-      menu: newMenu,
+      ct: date,
+      CompanyInfoId: companyId,
       menuItems: newMenuItemList,
     };
-    console.log(" data for menu items type: ", data);
-    console.log(" item list from menu ", reqObj);
-    axiosInstance
-      .post("Menus", reqObj)
+    navigate("/menuList");
+      axios.post("http://localhost:12269/api/MenuItems",reqObj,
+       {  headers: { Authorization: `Bearer ${token}` },
+      })  
       .then((response) => {
-        if(response.data.success){
-          console.log(" returned response for new menu ", response.data.data);
+        if(response.status===200){
+          alert("New Menu Created!")
+          console.log(" returned response for new menu ", response.data);
           let oldMenuList = [...menuList];
-          oldMenuList.push(response.data.data);
+          response.data?.map((menuItemVar)=>{
+            oldMenuList.push(menuItemVar);
+          })
           dispatch(updateMenuListAction(oldMenuList));
-          navigate("/menuList");
-        }   
+
+        }
+       else{alert("Something Is Wrong! Please Try Again")}    
       })
       .catch((err) => {
         alert("Network Error! Try Again Latter");
@@ -126,7 +133,6 @@ export default function CreateMenu() {
           </button>
         </div>
       </div>
-
       <div>
         <h3>Food Items:</h3>
         <hr />
@@ -134,10 +140,14 @@ export default function CreateMenu() {
           <div>
             {foodItems?.map((food, key) => {
               return (
-                <div>
+                <div key={key}>
                   {selectedIds[food.id]===true ?(
                 <div className="d-flex selectedItems" key={food.id}>
-                  <div>Id : {food.id}</div>
+                  <img src={food.picture}  className="cardImageMenu"></img>
+                  <div>{food.recipeName}</div>
+                  <div className="card-text">
+                      Category : {food.foodCategory.name}
+                    </div>
                   <div>
                     Item Group:
                     <select {...register(String(food.id))}>
@@ -151,8 +161,9 @@ export default function CreateMenu() {
                     </select>
                   </div>
                   <div className="form-check">
-                    <input className="form-check-input" onClick={()=>handleCheckboxClick(food.id)} type="checkbox" value="" id="defaultCheck1"/>
-                    <label className="form-check-label" for="defaultCheck1">
+                    <input className="form-check-input" onClick={()=>handleCheckboxClick(food.id)}
+                     type="checkbox" value="" id={"defaultCheck"+String(food.id)}/>
+                    <label className="form-check-label" htmlFor={"defaultCheck"+String(food.id)}>
                       Default Item
                     </label>
                   </div>
@@ -262,7 +273,7 @@ export default function CreateMenu() {
 */}            
           
       <ItemsModal
-        foods={foodItems}
+        foodItems={foodItems}
         selectedIds={selectedIds}
         setSelectedIds={setSelectedIds}
       />

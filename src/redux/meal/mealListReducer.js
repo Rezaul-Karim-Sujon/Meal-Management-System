@@ -9,7 +9,7 @@ const mealListReducer = (state = initialState,action)=>{
         case UPDATE_MEAL_LIST:
             return{
                 ...state,
-                menuList:action.payloads
+                mealList:action.payloads
             }   
         default:return state    
     }

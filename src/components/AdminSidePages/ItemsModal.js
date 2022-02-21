@@ -1,44 +1,38 @@
-
 import { React, useEffect, useState } from "react";
-import {useSelector} from "react-redux"
-export default function ItemsModal({foods,selectedIds, setSelectedIds}) {
 
-  const foodItems = useSelector(state=>state.foodItems.foodItems)
+export default function ItemsModal({ foodItems, selectedIds, setSelectedIds }) {
   const [selectedIdsLocal, setSelectedIdsLocal] = useState(selectedIds);
 
-  useEffect(()=>{
-    setSelectedIdsLocal(selectedIds)
-  },[selectedIds])
 
   useEffect(() => {
-    console.log('Local : ',selectedIds);
+    setSelectedIdsLocal(selectedIds);
+  }, [selectedIds]);
+
+  useEffect(() => {
+    console.log("Local : ", selectedIdsLocal);
   }, [selectedIdsLocal]);
 
-
-  const handleClick = (event) => {
-    const foodsId = Number(event.target.dataset.id);
-    if(foodsId in selectedIdsLocal){
+  const handleClick = (foodsId) => {
+    if (foodsId in selectedIdsLocal) {
       const newselectedIds = {
         ...selectedIdsLocal,
         [foodsId]: !selectedIdsLocal[foodsId],
-      }
-      setSelectedIdsLocal(newselectedIds);  
-      console.log("check ", newselectedIds);   
-    }
-    else{
+      };
+      setSelectedIdsLocal(newselectedIds);
+      console.log("check ", newselectedIds);
+    } else {
       const newselectedIds = {
         ...selectedIdsLocal,
         [foodsId]: true,
-      }
+      };
       setSelectedIdsLocal(newselectedIds);
       console.log("check ", newselectedIds);
     }
-
   };
 
-
-  return <>
-  <div
+  return (
+    <>
+      <div
         className="modal fade"
         id="exampleModal"
         tabIndex="-1"
@@ -59,60 +53,49 @@ export default function ItemsModal({foods,selectedIds, setSelectedIds}) {
               ></button>
             </div>
             <div className="modal-body">
-            <div className="searchDiv">
-          <input
-            type="text"
-            placeholder="Search Items"
-            className="form-control"
-          />
-        </div >
-              <hr />
-              <div>
-              {foodItems.map((food,key) => {
-                <div
-                onClick={(e) => handleClick(e)}
-                data-id={food.id}
-                className={
-                  selectedIdsLocal[food.foodItemId] === true ? "selectedCard" : "" + " card"
-                }>
-                  <img src={food.picture} className="card-img-top" alt="..." />
-                  <div className="card-body">
-                    <h5 className="card-title">{food.foodName}</h5>
-                    <p className="card-text">{food.recipy}</p>
-                  </div>
-                  <button className="btn btn-danger btn-sm">Delet</button>
-                </div>;
-              })}
+              <div className="searchDiv">
+                <input
+                  type="text"
+                  placeholder="Search Items"
+                  className="form-control"
+                />
               </div>
-            </div>  
+              <hr />
+              <div className="container">
+                <div className="row">
+                {foodItems?.map((food, key) => {
+                  return (
+                    <div className="col-md-4 col-sm-6 col-lg-3 gridDiv" key={food.id}>
+                    <div className={
+                       (selectedIdsLocal[food.id]===true)?"selectedCard":"" +" card "}
+                      
+                      // className={
+                      //   selectedIdsLocal[food.foodItemId] === true
+                      //     ? "selectedCard"
+                      //     : "" + " card foodCard col-sm-4"
+                      // }
+                      onClick={() => handleClick(food.id)}
 
-              {/*
-              
-              <div
-                className={
-                  selectedIdsLocal[6] === true ? "selectedCard" : "" + " card"
-                }
-                onClick={(e) => handleClick(e)}
-                data-id={6}
-              >
-                <img src="..." className="card-img-top" alt="..." data-id={6} />
-                <div className="card-body" data-id={6}>
-                  <h5 className="card-title" data-id={6}>
-                    Card title 6
-                  </h5>
-                  <p className="card-text" data-id={6}>
-                    Some quick example text to build on the card title and make
-                    up the bulk of the card's content.
-                  </p>
-                  <a href="#" className="btn btn-primary" data-id={6}>
-                    Go somewhere
-                  </a>
+                    >
+                      <h5 className="card-title">{food.recipeName}</h5>{" "}
+                      {food.recipyName}
+                      <div className="card-body">
+                        <p className="card-text">
+                          Category : {food.foodCategory.name}
+                        </p>
+                        <img
+                          src={food.picture}
+                          className="card-img-top cardImage"
+                          alt="..."
+                        />
+                      </div>
+                    </div>
+                    </div> 
+                  )
+                })}
                 </div>
               </div>
             </div>
-              */}
-
-              
 
             <div className="modal-footer">
               <button
@@ -127,7 +110,7 @@ export default function ItemsModal({foods,selectedIds, setSelectedIds}) {
                 type="button"
                 className="btn btn-primary"
                 data-bs-dismiss="modal"
-                onClick={()=>setSelectedIds(selectedIdsLocal)}
+                onClick={() => setSelectedIds(selectedIdsLocal)}
               >
                 Save changes
               </button>
@@ -135,5 +118,6 @@ export default function ItemsModal({foods,selectedIds, setSelectedIds}) {
           </div>
         </div>
       </div>
-  </>;
+    </>
+  );
 }

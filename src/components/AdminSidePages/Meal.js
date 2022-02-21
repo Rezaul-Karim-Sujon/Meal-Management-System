@@ -2,24 +2,107 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { updateMealListAction } from "./../../redux/meal/mealListUpdateAction";
-import axiosInstance from "../../utils/helperAxios";
+import { updateMenuListAction } from "./../../redux/menu/menuListUpdateAction";
+import axios from "axios";
+import Skeleton from 'react-loading-skeleton'
+import 'react-loading-skeleton/dist/skeleton.css'
 
 export default function Meal() {
   const companyId = useSelector((state) => state.user.user.companyId);
   const mealList = useSelector((state) => state.mealList.mealList);
   const menuList = useSelector((state) => state.menuList.menuList);
+  const token = localStorage.getItem("token");
   const dispatch = useDispatch();
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    axiosInstance
-      .get("Meals", { companyId: companyId })
+    axios
+    .get("http://localhost:12269/api/Meals", {
+      headers: { Authorization: `Bearer ${token}` },
+    })
       .then((res) => {
-        dispatch(updateMealListAction(res.data.data));
+        if(res.status===200){
+          console.log("fetch meal data : ",res.data)
+          dispatch(updateMealListAction(res.data))
+        }
       })
       .catch((err) => {
         console.log(err);
       });
   }, []);
+
+  useEffect(() => {
+    if(menuList !==[]){
+    axios
+      .get("http://localhost:12269/api/MenuItems", {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((res) => {
+        if (res.status === 200) {
+          console.log("menulistres ", res.data);
+          dispatch(updateMenuListAction(res.data));
+          setLoading(false)
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      })
+    }
+  }, []);
+
+
+  useEffect(()=>{
+    console.log(menuList)
+  },[mealList,loading,menuList])
+
+  if(loading){
+    return < div className="foodItemsDiv">
+    <div className="container">
+      <div className="row">
+        <div className="md-col-4 lg-col-3 sm-col-6">
+        <Skeleton counter={1} height={20}/>
+    <Skeleton count={1}  height={50}/>
+    <Skeleton counter={1} height={20}/>
+        </div>
+ 
+        <div className="md-col-4 lg-col-3 sm-col-6">
+        <Skeleton counter={1} height={20}/>
+    <Skeleton count={1}  height={60}/>
+    <Skeleton counter={1} height={20}/>
+        </div>
+        <div className="md-col-4 lg-col-3 sm-col-6">
+        <Skeleton counter={1} height={20}/>
+    <Skeleton count={1}  height={50}/>
+    <Skeleton counter={1} height={20}/>
+        </div>
+        <div className="md-col-4 lg-col-3 sm-col-6">
+        <Skeleton counter={1} height={20}/>
+    <Skeleton count={1}  height={60}/>
+    <Skeleton counter={1} height={20}/>
+        </div>
+        <div className="md-col-4 lg-col-3 sm-col-6">
+        <Skeleton counter={1} height={20}/>
+    <Skeleton count={1}  height={50}/>
+    <Skeleton counter={1} height={20}/>
+        </div>
+        <div className="md-col-4 lg-col-3 sm-col-6">
+        <Skeleton counter={1} height={20}/>
+    <Skeleton count={1}  height={60}/>
+    <Skeleton counter={1} height={20}/>
+        </div>
+        <div className="md-col-4 lg-col-3 sm-col-6">
+        <Skeleton counter={1} height={20}/>
+    <Skeleton count={1}  height={50}/>
+    <Skeleton counter={1} height={20}/>
+        </div>
+      
+      </div>
+ 
+    </div>
+    
+ 
+    </div>
+  } 
 
   return (
     <div className="menulist ">
@@ -43,18 +126,18 @@ export default function Meal() {
         <hr />
         {mealList.map((meal, key) => {
           return (
-            <div class="accordion" id="accordionExample">
-              <div class="accordion-item">
-                <h2 class="accordion-header" id="headingOne">
+            <div key={meal.mealId} className="accordion" id="accordionExample">
+              <div className="accordion-item">
+                <h2 className="accordion-header" id="headingOne">
                   <button
-                    class="accordion-button"
+                    className="accordion-button"
                     type="button"
                     data-bs-toggle="collapse"
-                    data-bs-target="#collapseOne"
+                    data-bs-target={"#collapseOne"+meal.id}
                     aria-expanded="true"
                     aria-controls="collapseOne"
                   >
-                    Meal #{meal.mealId} {meal.date} {meal.expireTime}
+                    Meal #{meal.id} Menu #{meal.menuId} 
                     {meal.mealType == 1
                       ? "Breakfast"
                       : meal.mealType == 2
@@ -63,40 +146,76 @@ export default function Meal() {
                   </button>
                 </h2>
                 <div
-                  id="collapseOne"
-                  class="accordion-collapse collapse show"
+                  id={"collapseOne"+meal.id}
+                  className="accordion-collapse collapse show"
                   aria-labelledby="headingOne"
                   data-bs-parent="#accordionExample"
                 >
-                  <div class="accordion-body">
-                    {menuList.map((menuObj,key2) => {
-                      return menuObj.menuId === meal.menuId &&
-                        menuObj.fixedItem === true ? (
-                        <div className="d-flex">
-                          <div>{menuObj.menuItemFoodItems.picture}</div>
-                          <div>{menuObj.menuItemFoodItems.recipeName}</div>
-                          <div>Fixed Item</div>
+                  <div className="accordion-body">
+                    {menuList.map((menu,key2) => {
+                      return menu.menuId === meal.menuId &&
+                        menu.fixedItem === true ? (
+                          <div key={menu.menuItemFoodItems[0].foodItem.id} 
+                          className="d-flex menuItemDiv">
+                          <img className="cardImageMenu"
+                            src={menu.menuItemFoodItems[0].foodItem.picture}
+                          />
+                          <div>
+                            {
+                              (menu.menuItemFoodItems[0].foodItem.recipeName)
+                            }
+                          </div>
+                          <div>Group : #{(menu.groupId)}</div>
+                          <div className="form-check">
+                            <input
+                              className="form-check-input"
+                              type="checkbox"
+                              readOnly
+                              checked={menu.isDifault ? "checked" : ""}
+                            />
+                            <label className="form-check-label">
+                              default {"  "}
+                            </label>
+                          </div>
+                          <div>
+                            {menu.fixedItem
+                              ? "  Fixed Item"
+                              : "  Not Fixed"}
+                          </div>
                         </div>
                       ) : (
                         ""
                       );
                     })}
-                    {menuList.map((menuObj,key2) => {
-                      return menuObj.menuId === meal.menuId &&
-                        menuObj.fixedItem === false ? (
-                        <div className="d-flex">
-                          <div>{menuObj.menuItemFoodItems.picture}</div>
-                          <div>{menuObj.menuItemFoodItems.recipeName}</div>
-                          <div>{menuObj.groupId}</div>
-                          <div class="form-check">
+                    {menuList.map((menu,key2) => {
+                      return menu.menuId === meal.menuId &&
+                        menu.fixedItem === false ? (
+                          <div key={key2} className="d-flex menuItemDiv">
+                          <img className="cardImageMenu"
+                            src={menu.menuItemFoodItems[0].foodItem.picture}
+                          />
+                          <div>
+                            {
+                              (menu.menuItemFoodItems[0].foodItem.recipeName)
+                            }
+                          </div>
+                          <div>Group : #{(menu.groupId)}</div>
+                          <div className="form-check">
                             <input
                               className="form-check-input"
                               type="checkbox"
-                              checked={menuObj.isDifault ? "checked" : ""}
+                              readOnly
+                              checked={menu.isDifault ? "checked" : ""}
                             />
-                            <label className="form-check-label">default</label>
+                            <label className="form-check-label">
+                              default {"  "}
+                            </label>
                           </div>
-                          <div>Fixed Item</div>
+                          <div>
+                            {menu.fixedItem
+                              ? "  Fixed Item"
+                              : "  Not Fixed"}
+                          </div>
                         </div>
                       ) : (
                         ""

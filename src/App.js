@@ -35,9 +35,9 @@ function App() {
             {!isAuthenticate && <Route path="login" element={<Login />} />}
             {/* //<Route element={<ProtecteedRoute />}> */}
             
-            {(isAuthenticate&& userType===2) &&
+            {(isAuthenticate&& userType===0) &&
               <Route path="" element={<AdminDashboard />}>
-                <Route path="" element={<Meal />} />
+                <Route path="" element={<FoodItems />} />
                 <Route path="meal" element={<Meal />} />
                 <Route path="menuList" element={<Menulist />} />
                 <Route path="foodItems" element={<FoodItems />} />

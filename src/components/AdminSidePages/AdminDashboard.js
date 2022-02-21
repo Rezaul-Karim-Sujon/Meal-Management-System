@@ -14,7 +14,7 @@ export default function AdminDashboard() {
 
   useEffect(()=>{
     const currentSideBarData = userType===1?SidebarSuperAdminData:
-          userType===2?SidebarAdminData:UserData;
+          userType===0?SidebarAdminData:UserData;
       setSideBarData(currentSideBarData)    
       },[sideBarData])
 

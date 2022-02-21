@@ -17,10 +17,11 @@ export default function App() {
   const onSubmit = (data) => {
     axiosInstance.post('users/login',data)
     .then(response=>{
-      if(response.data.success===true){
+      console.log("res : ",response)
+      if(response.status===200){
         localStorage.setItem('token',response.data.details)
         dispatch(userLoginAction(response.data.data))
-          navigate('/dashboard')
+          navigate('/')
         }
       else{
         setError(response.data.message)

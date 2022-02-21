@@ -1,39 +1,46 @@
-import { useEffect } from "react";
+import { useEffect , useState} from "react";
 import { useForm } from "react-hook-form";
-import { useSelector, useDispatch } from 'react-redux';
-import {updateFoodItemsAction} from './../../redux/foodItems/foodItemsUpdateAction'
+import { useSelector, useDispatch } from "react-redux";
+import { updateFoodItemsAction } from "./../../redux/foodItems/foodItemsUpdateAction";
 import axiosInstance from "../../utils/helperAxios";
+import axios from "axios";
+import Skeleton from 'react-loading-skeleton'
+import 'react-loading-skeleton/dist/skeleton.css'
 
 export default function FoodItems() {
   const { register, handleSubmit } = useForm();
+  const token = localStorage.getItem("token");
+  const foodItems = useSelector((state) => state.foodItems.foodItems);
+  const companyId = useSelector((state) => state.user.user.companyId);
+  const dispatch = useDispatch();
+  const [loading, setLoading] = useState(true)
 
-  const foodItems = useSelector(state =>state.foodItems.foodItems)
-  const companyId = useSelector(state =>state.user.user.companyId)
-  const dispatch = useDispatch()
+  
+  useEffect(() => {
+    axios
+      .get("http://localhost:12269/api/foodItems",
+       {  headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((res) => {
+        if (res.status === 200) {
+          setLoading(false)
+          console.log("res.data",res.data)
+          dispatch(updateFoodItemsAction(res.data));
+        }
+      })
+      .catch((err) => console.log(err));
+  }, []);
 
-  useEffect(()=>{
-    axiosInstance
-     .get("foodItems",{"companyId":companyId})
-     .then((res) => {
-       dispatch(updateFoodItemsAction(res.data.data))
-    })
-    .catch((err) => {
-      console.log(err);
-    })
-   },[])
+  useEffect(()=>{console.log("loading ", loading)},[loading])
 
-   useEffect(()=>{
-  console.log("strore :foods ",foodItems)
-   },[foodItems])
-
-   const handleDelete = (index)=>{
-     if(window.confirm("Are You Sure To Delet?")){
-       //api req for delete
-      const currFoods =[...foodItems]
-      let newFoodItems = currFoods.splice(index-1,1)
-      dispatch(updateFoodItemsAction(newFoodItems))
-     }
-   }
+  const handleDelete = (index) => {
+    if (window.confirm("Are You Sure To Delet?")) {
+      //api req for delete
+      const currFoods = [...foodItems];
+      let newFoodItems = currFoods.splice(index - 1, 1);
+      dispatch(updateFoodItemsAction(newFoodItems));
+    }
+  };
 
   const onSubmit = (data) => {
     let picture = data.picture[0];
@@ -41,31 +48,80 @@ export default function FoodItems() {
     reader.readAsDataURL(picture);
     reader.onload = (e) => {
       data.picture = e.target.result;
-      data.companyId = companyId
+      data.companyInfoId = companyId;
+      data.foodCategoryId = Number(data.foodCategoryId)
       console.log("client data ", data);
-      // let newFoodItems = [...foodItems]
-      // console.log("lastnewFoodItems ",newFoodItems)
-      // newFoodItems.push(data)
-      // dispatch(updateFoodItemsAction(newFoodItems))
-      axiosInstance
-        .post("foodItems", data)
+      axios
+        .post("http://localhost:12269/api/foodItems", data, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
         .then((res) => {
-          if(res.data.success){
-            let newFoodItems = [...foodItems]
-            newFoodItems.push(res)
-            dispatch(updateFoodItemsAction(newFoodItems))
-          }
-          else{
-            alert(res.data.message)
+          if (res.status===200) {
+            let newFoodItems = [...foodItems];
+            newFoodItems.push(res.data[0]);
+            dispatch(updateFoodItemsAction(newFoodItems));
+            alert("New Food Item Created Successfully!")
+          } else {
+            console.log("err :", res);
           }
         })
-        .catch((err) => { 
-          console.log(err);
+        .catch((err) => {
+          console.log("err :", err);
         });
       //setImage(e.target.result)
     };
   };
 
+ if(loading){
+   return < div className="foodItemsDiv">
+   <div className="container">
+     <div className="row">
+       <div className="md-col-4 lg-col-3 sm-col-6">
+       <Skeleton counter={1} height={20}/>
+   <Skeleton count={1}  height={50}/>
+   <Skeleton counter={1} height={20}/>
+       </div>
+
+       <div className="md-col-4 lg-col-3 sm-col-6">
+       <Skeleton counter={1} height={20}/>
+   <Skeleton count={1}  height={60}/>
+   <Skeleton counter={1} height={20}/>
+       </div>
+       <div className="md-col-4 lg-col-3 sm-col-6">
+       <Skeleton counter={1} height={20}/>
+   <Skeleton count={1}  height={50}/>
+   <Skeleton counter={1} height={20}/>
+       </div>
+       <div className="md-col-4 lg-col-3 sm-col-6">
+       <Skeleton counter={1} height={20}/>
+   <Skeleton count={1}  height={60}/>
+   <Skeleton counter={1} height={20}/>
+       </div>
+       <div className="md-col-4 lg-col-3 sm-col-6">
+       <Skeleton counter={1} height={20}/>
+   <Skeleton count={1}  height={50}/>
+   <Skeleton counter={1} height={20}/>
+       </div>
+       <div className="md-col-4 lg-col-3 sm-col-6">
+       <Skeleton counter={1} height={20}/>
+   <Skeleton count={1}  height={60}/>
+   <Skeleton counter={1} height={20}/>
+       </div>
+       <div className="md-col-4 lg-col-3 sm-col-6">
+       <Skeleton counter={1} height={20}/>
+   <Skeleton count={1}  height={50}/>
+   <Skeleton counter={1} height={20}/>
+       </div>
+     
+     </div>
+
+   </div>
+   
+
+   </div>
+ } 
+
+ 
   return (
     <div className="foodItemsDiv">
       <div className="itemHeaderDiv row">
@@ -109,23 +165,13 @@ export default function FoodItems() {
             </div>
             <div className="modal-body addInputModal">
               <form onSubmit={handleSubmit(onSubmit)}>
-
-                <div className="row">
-                  <label className="col-sm-3 col-form-label">Food Name</label>
-                  <div className="col-sm-9">
-                    <input
-                      type="text" required
-                      {...register("foodName")}
-                      className="form-control"
-                    />
-                  </div>
-                </div>
                 <div className="row">
                   <label className="col-sm-3 col-form-label">Recipy Name</label>
                   <div className="col-sm-9">
-                    <input required
+                    <input
+                      required
                       type="text"
-                      {...register("recipy")}
+                      {...register("recipeName")}
                       className="form-control"
                     />
                   </div>
@@ -133,17 +179,18 @@ export default function FoodItems() {
                 <div className="row">
                   <label className="col-sm-3 col-form-label">Category</label>
                   <div className="col-sm-9">
-                    <select {...register("category")} required>
-                      <option value="Fish">Fish</option>
-                      <option value="Mutton">Mutton</option>
-                      <option value="Rice">Rice</option>
-                      <option value="Vagitables">Vagitables</option>
+                    <select {...register("foodCategoryId")} required>
+                      <option value={1}>Fish</option>
+                      <option value={2}>Mutton</option>
+                      <option value={3}>Rice</option>
+                      <option value={4}>Vagitables</option>
                     </select>
                   </div>
                   <div className="row">
                     <label className="col-sm-3 col-form-label">Picture</label>
                     <div className="col-sm-9">
-                      <input required
+                      <input
+                        required
                         type="file"
                         accept="image/*"
                         className="form-control-file"
@@ -173,25 +220,35 @@ export default function FoodItems() {
         </div>
       </div>
       <h3>Food Items:</h3>
-<hr/>
-      <div className="foodItems grid">
-
-  {foodItems?.map((food,key)=>{
-    return(
-      <div key={key}  className="card foodCard col-sm-4" >
-      <h5 className="card-title">{food.foodName}</h5>
-      <img src={food.picture} className="card-img-top cardImage" alt="..."/>
-      {food.recipyName}
-      <div className="card-body">
-       
-        <p className="card-text">{food.recipy}</p>
-      </div>
-      <button className='btn btn-danger btn-sm'
-      onClick={()=>handleDelete(key)}
-      >Delet</button>
-    </div>
-    )
-  })}
+      <hr />
+      <div className="container">
+        <div className="row">
+          {foodItems?.map((food, key) => {
+            return (
+              <div key={food.id} className="col-md-4 col-sm-6 col-lg-3 gridDiv">
+                <div className="card">
+                  <h5 className="card-title">{food.recipeName}</h5>
+                  <div className="card-body">
+                    <p className="card-text">
+                      Category : {food.foodCategory.name}
+                    </p>
+                    <img
+                      src={food.picture}
+                      className="card-img-top cardImage"
+                      alt="..."
+                    />
+                  </div>
+                  <button
+                    className="btn btn-danger btn-sm"
+                    onClick={() => handleDelete(key)}
+                  >
+                    Delet
+                  </button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
       </div>
     </div>
   );

@@ -5,11 +5,12 @@ import MenuListModal from "./MenuListModal";
 import { useSelector, useDispatch } from "react-redux";
 import { updateMenuListAction } from "./../../redux/menu/menuListUpdateAction";
 import { updateMealListAction } from "./../../redux/meal/mealListUpdateAction";
-import axiosInstance from "../../utils/helperAxios";
+import axios from "axios";
 
 export default function CreateMeal() {
   const { register, handleSubmit } = useForm();
   const [menuId, setMenuId] = useState(null);
+  const token = localStorage.getItem("token");
 
   const navigate = useNavigate();
   const menuList = useSelector((state) => state.menuList.menuList);
@@ -18,34 +19,46 @@ export default function CreateMeal() {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    axiosInstance
-      .get("Menus",{"companyId":companyId})
-      .then((res) => {
-        dispatch(updateMenuListAction(res.data.data));
+    if(menuList ===[]){
+    axios
+      .get("http://localhost:12269/api/MenuItems", {
+        headers: { Authorization: `Bearer ${token}` },
       })
-      .catch((err) => {
-        console.log(err);
-      });
-  }, []);
-
-  useEffect(() => {}, [menuId]);
-
-  const onSubmit = (data) => {
-    data.companyId = companyId;
-    data.menuId = menuId;
-    console.log(" data for menu items type: ", data);
-    axiosInstance
-      .post("Meals", data)
-      .then((response) => {
-        if(response.data.success){
-        let newMealList = [...mealList]
-        newMealList.push(response.data.data)
-        dispatch(updateMealListAction(newMealList))
-        navigate("/meal");
+      .then((res) => {
+        if (res.status === 200) {
+          console.log("menulistres ", res.data);
+          dispatch(updateMenuListAction(res.data));
         }
       })
       .catch((err) => {
         console.log(err);
+      })
+    }
+  }, []);
+
+
+  useEffect(() => {}, [menuId]);
+
+  const onSubmit = (data) => {
+    data.CompanyInfoId = companyId;
+    data.menuId = menuId;
+    console.log(" data for menu items type: ", data);
+    navigate("/meal");
+    axios
+      .post("http://localhost:12269/api/Meals", data)
+      .then((response) => {
+        if(response.status===200){
+        let newMealList = [...mealList]
+        newMealList.push(response.data[0])
+        dispatch(updateMealListAction(newMealList))
+        alert("New Meal Created Successfully");
+        }
+        else{
+          alert("Something Is Wrong! Please Try Again");
+        }
+      })
+      .catch((err) => {
+        alert("Network Error! Check Your Internet Connection");
       });
   };
 
@@ -133,39 +146,40 @@ export default function CreateMeal() {
               </h5>
               <hr />
               <div className="itemList">
-                {menuList.map((menuObj,key2) => {
-                  return menuObj.menuId === menuId &&
-                    menuObj.fixedItem === true ? (
-                    <div className="d-flex">
-                      <div>{menuObj.foodItems.picture}</div>
-                      <div>{menuObj.foodItems.recipeName}</div>
-                      <div>Fixed Item</div>
-                    </div>
-                  ) : (
-                    ""
-                  );
-                })}
-                {menuList.map((menuObj,key2) => {
-                  return menuObj.menuId === menuId &&
-                    menuObj.fixedItem === false ? (
-                    <div className="d-flex">
-                      <div>{menuObj.foodItems.picture}</div>
-                      <div>{menuObj.foodItems.recipeName}</div>
-                      <div>{menuObj.groupId}</div>
-                      <div classNAme="form-check">
-                        <input
-                          className="form-check-input"
-                          type="checkbox" disabled
-                          checked={menuObj.isDifault ? "checked" : ""}
-                        />
-                        <label className="form-check-label">default</label>
-                      </div>
-                      <div>Fixed Item</div>
-                    </div>
-                  ) : (
-                    ""
-                  );
-                })}
+               
+              {menuList.map((menu, key2) => {
+                        return menu.menuId === menuId ? (
+                          <div key={key2} className="d-flex menuItemDiv">
+                            <img className="cardImageMenu"
+                              src={menu.menuItemFoodItems[0].foodItem.picture}
+                            />
+                            <div>
+                              {
+                                (menu.menuItemFoodItems[0].foodItem.recipeName)
+                              }
+                            </div>
+                            <div>Group : #{(menu.groupId)}</div>
+                            <div className="form-check">
+                              <input
+                                className="form-check-input"
+                                type="checkbox"
+                                readOnly
+                                checked={menu.isDifault ? "checked" : ""}
+                              />
+                              <label className="form-check-label">
+                                default {"  "}
+                              </label>
+                            </div>
+                            <div>
+                              {menu.fixedItem
+                                ? "  Fixed Item"
+                                : "  Not Fixed"}
+                            </div>
+                          </div>
+                        ) : (
+                          ""
+                        );
+                      })}
               </div>
               <input
                 type="submit"
