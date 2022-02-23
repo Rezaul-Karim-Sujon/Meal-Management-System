@@ -67,9 +67,9 @@ namespace Meal_Management_Web_API.Controllers
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutUser(int id, User user)
+        public async Task<IActionResult> PutUser(int id, [FromForm]VmRegistration filter)
         {
-            if (id != user.Id)
+            if (id != filter.Id)
             {
                 return BadRequest(new ResponseModel {
                     Success=false,
@@ -77,7 +77,29 @@ namespace Meal_Management_Web_API.Controllers
                     Details="Id and User Id don't match",
                 });
             }
-
+            var result = await _context
+                .Users
+                .AsNoTracking()
+                .SingleOrDefaultAsync(e=>e.Id==id);
+            string path = string.Concat(_webHostEnvironment.WebRootPath, Constant.UserImagePath.NoTilde())+ result.Picture;
+            if (path != null && System.IO.File.Exists(path))
+            {
+                System.IO.File.Delete(path);
+            }
+            string PicturePath = UploadFileControl.FileName(filter.Picture,
+                string.Concat(_webHostEnvironment.WebRootPath, Constant.UserImagePath.NoTilde()));
+            var user = new User
+            {
+                Id = id,
+                Name = filter.Name,
+                Email = filter.Email,
+                Phone = filter.Phone,
+                Active = filter.Active,
+                UserType = filter.UserType,
+                Picture = PicturePath,
+                Password = filter.Password,
+                CompanyId = filter.CompanyId
+            };
             _context.Entry(user).State = EntityState.Modified;
 
             try

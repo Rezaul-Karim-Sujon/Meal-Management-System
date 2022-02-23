@@ -44,6 +44,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="wwwroot\Images\Company\" />
+    <Folder Include="wwwroot\Images\FoodItem\" />
     <Folder Include="wwwroot\Images\User\" />
   </ItemGroup>
 

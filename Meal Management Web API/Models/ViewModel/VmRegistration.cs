@@ -7,10 +7,11 @@ using System.Threading.Tasks;
 
 namespace Meal_Management_Web_API.Models.ViewModel
 {
-    public class VmRegistration
+    public class VmRegistration:VmBaseEntity
     {
         public string Name { get; set; }
         public string Email { get; set; }
+        public int UserType { get; set; }
         public string Phone { get; set; }
         public bool Active { get; set; }
         public IFormFile Picture { get; set; }
