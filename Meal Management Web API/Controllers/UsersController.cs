@@ -142,7 +142,7 @@ namespace Meal_Management_Web_API.Controllers
                 Email = filter.Email,
                 Phone = filter.Phone,
                 Active = filter.Active,
-                UserType = 0,
+                UserType = filter.UserType,
                 Picture = PicturePath,
                 Password = filter.Password,
                 CompanyId = filter.CompanyId
