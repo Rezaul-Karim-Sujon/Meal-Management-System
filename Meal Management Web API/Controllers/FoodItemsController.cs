@@ -8,6 +8,8 @@ using Microsoft.EntityFrameworkCore;
 using Meal_Management_Web_API.Models.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Meal_Management_Web_API.Models.ViewModel;
+using Microsoft.AspNetCore.Hosting;
+using Meal_Management_Web_API.Models.Others;
 
 namespace Meal_Management_Web_API.Controllers
 {
@@ -17,10 +19,11 @@ namespace Meal_Management_Web_API.Controllers
     public class FoodItemsController : ControllerBase
     {
         private readonly AppDbContext _context;
-
-        public FoodItemsController(AppDbContext context)
+        private readonly IWebHostEnvironment _webHostEnvironment;
+        public FoodItemsController(AppDbContext context, IWebHostEnvironment webHostEnvironment)
         {
             _context = context;
+            _webHostEnvironment = webHostEnvironment;
         }
 
         // GET: api/FoodItems
@@ -53,13 +56,31 @@ namespace Meal_Management_Web_API.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutFoodItem(int id, FoodItem foodItem)
+        public async Task<IActionResult> PutFoodItem(int id, [FromForm]VMFoodItem filter)
         {
-            if (id != foodItem.Id)
+            if (id != filter.Id)
             {
                 return BadRequest();
             }
-
+            var result = await _context
+                .FoodItems
+                .AsNoTracking()
+                .SingleOrDefaultAsync(e => e.Id == id);
+            string path = string.Concat(_webHostEnvironment.WebRootPath, Constant.FoodItemPicturePath.NoTilde()) + result.Picture;
+            if (path != null && System.IO.File.Exists(path))
+            {
+                System.IO.File.Delete(path);
+            }
+            string PicturePath = UploadFileControl.FileName(filter.Picture,
+                string.Concat(_webHostEnvironment.WebRootPath, Constant.FoodItemPicturePath.NoTilde()));
+            var foodItem = new FoodItem
+            {
+                Id = id,
+                FoodCategoryId = filter.FoodCategoryId,
+                RecipeName = filter.RecipeName,
+                Picture = PicturePath,
+                CompanyInfoId = filter.CompanyInfoId
+            };
             _context.Entry(foodItem).State = EntityState.Modified;
 
             try
@@ -88,8 +109,17 @@ namespace Meal_Management_Web_API.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
-        public async Task<ActionResult<FoodItem>> PostFoodItem(FoodItem foodItem)
+        public async Task<ActionResult<FoodItem>> PostFoodItem([FromForm]VMFoodItem filter)
         {
+            string PicturePath = UploadFileControl.FileName(filter.Picture,
+                string.Concat(_webHostEnvironment.WebRootPath, Constant.FoodItemPicturePath.NoTilde()));
+            var foodItem = new FoodItem
+            {
+                FoodCategoryId = filter.FoodCategoryId,
+                RecipeName = filter.RecipeName,
+                Picture = PicturePath,
+                CompanyInfoId = filter.CompanyInfoId
+            };
             _context.FoodItems.Add(foodItem);
             await _context.SaveChangesAsync();
             var foodItemId = _context.FoodItems.Max(e => e.Id);
@@ -110,7 +140,11 @@ namespace Meal_Management_Web_API.Controllers
             {
                 return NotFound();
             }
-
+            string path = string.Concat(_webHostEnvironment.WebRootPath, Constant.UserImagePath.NoTilde()) + foodItem.Picture;
+            if (System.IO.File.Exists(path))
+            {
+                System.IO.File.Delete(path);
+            }
             _context.FoodItems.Remove(foodItem);
             await _context.SaveChangesAsync();
 

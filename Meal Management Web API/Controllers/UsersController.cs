@@ -13,6 +13,8 @@ using System.Security.Claims;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Authorization;
 using Meal_Management_Web_API.Models.Others;
+using Microsoft.AspNetCore.Hosting;
+using System.IO;
 
 namespace Meal_Management_Web_API.Controllers
 {
@@ -23,11 +25,12 @@ namespace Meal_Management_Web_API.Controllers
     {
         private readonly AppDbContext _context;
         private readonly IJwtAuthenticationManager _jwtAuthenticationManager;
-
-        public UsersController(AppDbContext context, IJwtAuthenticationManager jwtAuthenticationManager)
+        private readonly IWebHostEnvironment _webHostEnvironment;
+        public UsersController(AppDbContext context, IJwtAuthenticationManager jwtAuthenticationManager, IWebHostEnvironment webHostEnvironment)
         {
             _context = context;
             _jwtAuthenticationManager = jwtAuthenticationManager;
+            _webHostEnvironment = webHostEnvironment; 
         }
 
         // GET: api/Users
@@ -64,9 +67,9 @@ namespace Meal_Management_Web_API.Controllers
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutUser(int id, User user)
+        public async Task<IActionResult> PutUser(int id, [FromForm]VmRegistration filter)
         {
-            if (id != user.Id)
+            if (id != filter.Id)
             {
                 return BadRequest(new ResponseModel {
                     Success=false,
@@ -74,7 +77,29 @@ namespace Meal_Management_Web_API.Controllers
                     Details="Id and User Id don't match",
                 });
             }
-
+            var result = await _context
+                .Users
+                .AsNoTracking()
+                .SingleOrDefaultAsync(e=>e.Id==id);
+            string path = string.Concat(_webHostEnvironment.WebRootPath, Constant.UserImagePath.NoTilde())+ result.Picture;
+            if (path != null && System.IO.File.Exists(path))
+            {
+                System.IO.File.Delete(path);
+            }
+            string PicturePath = UploadFileControl.FileName(filter.Picture,
+                string.Concat(_webHostEnvironment.WebRootPath, Constant.UserImagePath.NoTilde()));
+            var user = new User
+            {
+                Id = id,
+                Name = filter.Name,
+                Email = filter.Email,
+                Phone = filter.Phone,
+                Active = filter.Active,
+                UserType = filter.UserType,
+                Picture = PicturePath,
+                Password = filter.Password,
+                CompanyId = filter.CompanyId
+            };
             _context.Entry(user).State = EntityState.Modified;
 
             try
@@ -102,14 +127,15 @@ namespace Meal_Management_Web_API.Controllers
                 Data = user
             });
         }
-        
         // POST: api/Users
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [AllowAnonymous]
         [HttpPost]
-        public async Task<ActionResult<User>> PostUser(VmRegistration filter)
+        public async Task<ActionResult<User>> PostUser([FromForm]VmRegistration filter)
         {
+            string PicturePath = UploadFileControl.FileName(filter.Picture,
+                string.Concat(_webHostEnvironment.WebRootPath, Constant.UserImagePath.NoTilde()));
             var result = new User
             {
                 Name = filter.Name,
@@ -117,7 +143,7 @@ namespace Meal_Management_Web_API.Controllers
                 Phone = filter.Phone,
                 Active = filter.Active,
                 UserType = 0,
-                Picture = filter.Picture,
+                Picture = PicturePath,
                 Password = filter.Password,
                 CompanyId = filter.CompanyId
             };
@@ -141,10 +167,13 @@ namespace Meal_Management_Web_API.Controllers
                     Message="User Not found"
                 });
             }
-
+            string path = string.Concat(_webHostEnvironment.WebRootPath, Constant.UserImagePath.NoTilde()) + user.Picture;
+            if(System.IO.File.Exists(path))
+            {
+                System.IO.File.Delete(path);
+            }
             _context.Users.Remove(user);
             await _context.SaveChangesAsync();
-
             return Ok(new ResponseModel {
                 Success=true,
                 Message="User Successfully Deleted"

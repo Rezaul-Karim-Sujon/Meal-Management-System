@@ -40,7 +40,6 @@ namespace Meal_Management_Web_API
                 .AddNewtonsoftJson(options =>
                 options.SerializerSettings.ReferenceLoopHandling=Newtonsoft.Json.ReferenceLoopHandling.Ignore
                 );
-
             services.AddDbContext<AppDbContext>(options =>
             options.UseSqlServer(Configuration.GetConnectionString("AppContext")),ServiceLifetime.Transient);
             
@@ -93,6 +92,7 @@ namespace Meal_Management_Web_API
                 }
             });
             app.UseRouting();
+            app.UseStaticFiles();
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseEndpoints(endpoints =>

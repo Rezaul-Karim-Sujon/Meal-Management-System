@@ -1,0 +1,28 @@
+﻿using Microsoft.AspNetCore.Http;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace Meal_Management_Web_API.Models.Others
+{
+    public class UploadFileControl
+    {
+        public static string FileName(IFormFile file, string PathToUpload)
+        {
+            string uniqueFileName = null;
+            if(file!=null)
+            {
+                string uploadsFolder = PathToUpload;
+                uniqueFileName = Guid.NewGuid().ToString() + "_" + file.FileName;
+                string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    file.CopyTo(fileStream);
+                }
+            }
+            return uniqueFileName;
+        }
+    }
+}
