@@ -12,7 +12,6 @@ namespace Meal_Management_Web_API.Models.Entities
         [ForeignKey("CompanyInfo")]
         public int? CompanyInfoId { get; set; }
         public virtual CompanyInfo CompanyInfo { get; set; }
-        [NotMapped]
         public virtual IEnumerable<MenuItem> MenuItems { get; set; }
         public virtual IEnumerable<Meal> Meals { get; set; }
     }
