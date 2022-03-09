@@ -98,7 +98,9 @@ namespace Meal_Management_Web_API.Controllers
                 UserType = filter.UserType,
                 Picture = PicturePath,
                 Password = filter.Password,
-                CompanyId = filter.CompanyId
+                CompanyId = filter.CompanyId,
+                Address=filter.Address,
+                About=filter.About
             };
             _context.Entry(user).State = EntityState.Modified;
 
@@ -145,7 +147,9 @@ namespace Meal_Management_Web_API.Controllers
                 UserType = filter.UserType,
                 Picture = PicturePath,
                 Password = filter.Password,
-                CompanyId = filter.CompanyId
+                CompanyId = filter.CompanyId,
+                Address=filter.Address,
+                About=filter.About
             };
             _context.Users.Add(result);
             await _context.SaveChangesAsync();
