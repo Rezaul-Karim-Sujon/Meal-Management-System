@@ -72,7 +72,12 @@ namespace Meal_Management_Web_API.Controllers
             {
                 Id = id,
                 Name=filter.Name,
-                Logo=PicturePath
+                Logo=PicturePath,
+                Address = filter.Address,
+                Website = filter.Website,
+                Contact = filter.Contact,
+                About = filter.About,
+                Active = filter.Active
             };
             _context.Entry(companyInfo).State = EntityState.Modified;
 
@@ -109,7 +114,12 @@ namespace Meal_Management_Web_API.Controllers
             var companyInfo = new CompanyInfo
             {
                 Name = filter.Name,
-                Logo = PicturePath
+                Logo = PicturePath,
+                Address= filter.Address,
+                Website=filter.Website,
+                Contact=filter.Contact,
+                About=filter.About,
+                Active=filter.Active
             };
             _context.CompanyInfos.Add(companyInfo);
             await _context.SaveChangesAsync();
