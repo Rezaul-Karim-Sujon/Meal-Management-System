@@ -28,9 +28,12 @@ namespace Meal_Management_Web_API.Controllers
 
         // GET: api/FoodItems
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<FoodItem>>> GetFoodItems()
+        public async Task<ActionResult<IEnumerable<FoodItem>>> GetFoodItems(VmBaseEntity filter)
         {
-            var foodItems = _context.FoodItems
+            var foodItemList = _context.FoodItems
+                .AsNoTracking();
+            if (filter.UserType > 1) foodItemList = foodItemList.Where(e => e.CompanyInfoId == filter.CompanyId);
+            var foodItems = foodItemList
                 .AsNoTracking()
                 .Include(e => e.CompanyInfo)
                 .Include(e => e.FoodCategory)

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Meal_Management_Web_API.Models.Entities;
+using Meal_Management_Web_API.Models.ViewModel;
 
 namespace Meal_Management_Web_API.Controllers
 {
@@ -22,9 +23,19 @@ namespace Meal_Management_Web_API.Controllers
 
         // GET: api/Menus
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Menu>>> GetMenus()
+        public async Task<ActionResult<IEnumerable<Menu>>> GetMenus(VmBaseEntity filter)
         {
-            return await _context.Menus.ToListAsync();
+            var MenuList = _context.Menus
+                .AsNoTracking();
+            if (filter.UserType > 1) MenuList = MenuList.Where(e => e.CompanyInfoId == filter.CompanyId);
+            var menus = MenuList
+                .AsNoTracking()
+                .Include(e=>e.MenuItems)
+                .ThenInclude(e=>e.MenuItemFoodItems)
+                .ThenInclude(e=>e.FoodItem)
+                .Include(e=>e.CompanyInfo)
+                .ToListAsync();
+            return await menus;
         }
 
         // GET: api/Menus/5

@@ -17,7 +17,8 @@ namespace Meal_Management_Web_API.Models.Entities
         public string Picture { get; set; }
         public int UserType { get; set; }
         public string Password { get; set; }
-
+        public string Address { get; set; }
+        public string About { get; set; }
         public int? CompanyId { get; set; }
         public virtual PresentEmployee PresentEmployee { get; set; }
         public virtual CompanyInfo Company { get; set; }
