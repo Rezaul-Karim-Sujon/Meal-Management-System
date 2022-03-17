@@ -23,7 +23,7 @@ namespace Meal_Management_Web_API.Controllers
 
         // GET: api/Menus
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Menu>>> GetMenus(VmBaseEntity filter)
+        public async Task<ActionResult<IEnumerable<Menu>>> GetMenus([FromQuery]VmBaseEntity filter)
         {
             var MenuList = _context.Menus
                 .AsNoTracking();
