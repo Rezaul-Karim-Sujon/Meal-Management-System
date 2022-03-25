@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Meal_Management_Web_API.Models.Entities;
 using Meal_Management_Web_API.Models.ViewModel;
+using Meal_Management_Web_API.Models.Others;
 
 namespace Meal_Management_Web_API.Controllers
 {
@@ -40,15 +41,24 @@ namespace Meal_Management_Web_API.Controllers
 
         // GET: api/Menus/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Menu>> GetMenu(int id)
+        public async Task<ActionResult<IEnumerable<Menu>>> GetMenu(int id)
         {
-            var menu = await _context.Menus.FindAsync(id);
+            var menu = await _context.Menus
+                .Where(e=>e.Id==id)
+                .Include(e=>e.MenuItems)
+                .ThenInclude(e=>e.MenuItemFoodItems)
+                .ThenInclude(e=>e.FoodItem)
+                .Include(e=>e.CompanyInfo)
+                .ToListAsync();
 
-            if (menu == null)
+            if (menu.Count()==0)
             {
-                return NotFound();
+                return NotFound(new ResponseModel
+                {
+                    Success = false,
+                    Message = "Meals not found"
+                });
             }
-
             return menu;
         }
 
